@@ -4,6 +4,7 @@ import Router from 'vue-router';
 import Login from "@/views/Login";
 import Project from "@/views/Project";
 import DashBoard from "@/views/DashBoard";
+import RuleEditor from "@/components/RuleEditor";
 import Exception404 from '@/views/exception/404'
 
 Vue.use(Router);
@@ -23,7 +24,15 @@ export default new Router({
         {
             path: '/dashboard',
             name: 'dashboard',
-            component: DashBoard
+            component: DashBoard,
+            children: [
+                {
+                    path: 'rule_edit',
+                    name: 'ruleEdit',
+                    component: RuleEditor,
+                    props: true
+                }
+            ]
         },
         {
             path: '/404',

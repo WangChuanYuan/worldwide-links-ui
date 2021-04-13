@@ -32,6 +32,9 @@
             <el-button :icon="isCollapsed ? 'el-icon-s-unfold' : 'el-icon-s-fold'"
                        @click="isCollapsed=!isCollapsed"/>
           </el-menu-item>
+          <el-menu-item>
+            <i>{{projectName}}</i>
+          </el-menu-item>
           <el-submenu index="member" v-if="id" style="float: right">
             <template slot="title">{{ id }}</template>
             <el-menu-item index="member-logout">
@@ -60,6 +63,7 @@ export default {
   data() {
     return {
       id: '',
+      projectName: '',
       isCollapsed: false
     }
   },
@@ -70,7 +74,7 @@ export default {
           this.$router.push('/');
           break;
         case 'rule-engine':
-          this.$router.push('/');
+          this.$router.push('/dashboard/rule_edit');
           break;
         case 'member-login':
           this.$router.push('/');
@@ -104,8 +108,7 @@ export default {
 }
 
 #main {
-  margin: 3% auto 0 auto;
+  margin: 0 auto 0 auto;
   min-height: 80%;
-  background-color: var(--theme-deep-grey);
 }
 </style>
