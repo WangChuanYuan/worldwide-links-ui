@@ -1,12 +1,13 @@
 <template>
   <el-container style="min-height: 100%;">
-    <el-aside class="menu">
+    <el-aside>
       <el-menu :default-active="this.$route.name"
                @select="navigation"
                :collapse="isCollapsed"
                text-color="white"
                active-text-color="var(--theme-golden)"
-               style="background-color: #001529; height: 100%">
+               background-color="#001529"
+               style="height: 100%">
         <el-menu-item style="margin: 30px 25px 30px 25px">
           <span class="logo">WordWide Links</span>
         </el-menu-item>
@@ -14,9 +15,17 @@
           <i class="el-icon-setting"></i>
           <span>设备管理</span>
         </el-menu-item>
-        <el-menu-item index="rule-engine">
-          <i class="el-icon-place"></i>
-          <span>规则引擎</span>
+        <el-submenu index="rule">
+          <template slot="title">
+            <i class="el-icon-place"></i>
+            <span>规则引擎</span>
+          </template>
+          <el-menu-item index="rule-manage">规则管理</el-menu-item>
+          <el-menu-item index="rule-edit">规则编辑</el-menu-item>
+        </el-submenu>
+        <el-menu-item index="simulator">
+          <i class="el-icon-mobile"></i>
+          <span>设备模拟</span>
         </el-menu-item>
       </el-menu>
     </el-aside>
@@ -67,14 +76,24 @@ export default {
       isCollapsed: false
     }
   },
+  mounted() {
+    // TODO REMOVE
+    sessionStorage.setItem('projectId', '1');
+  },
   methods: {
     navigation(key) {
       switch (key) {
         case 'device-manage':
           this.$router.push('/');
           break;
-        case 'rule-engine':
+        case 'rule-manage':
+          this.$router.push('/dashboard/rule_manage');
+          break;
+        case 'rule-edit':
           this.$router.push('/dashboard/rule_edit');
+          break;
+        case 'simulator':
+          this.$router.push('/dashboard/simulator');
           break;
         case 'member-login':
           this.$router.push('/');

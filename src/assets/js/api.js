@@ -40,4 +40,36 @@ api.get = (url, params) => {
     });
 };
 
+api.put = (url, data) => {
+    return new Promise((resolve, reject) => {
+        instance({
+            url: url,
+            method: 'put',
+            data: data
+        }).then(res => {
+            console.log(res);
+            resolve(res.data);
+        }).catch(err => {
+            console.error(err);
+            reject(err);
+        });
+    });
+};
+
+api.delete = (url, params) => {
+    return new Promise((resolve, reject) => {
+        instance({
+            url: url,
+            method: 'delete',
+            params: params
+        }).then(res => {
+            console.log(res);
+            resolve(res.data);
+        }).catch(err => {
+            console.error(err);
+            reject(err);
+        });
+    });
+};
+
 export default api;

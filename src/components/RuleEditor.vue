@@ -4,7 +4,7 @@
       <h3>规则编辑</h3>
       <hr/>
       <el-breadcrumb separator-class="el-icon-arrow-right" style="padding: 10px 0 10px 30px">
-        <el-breadcrumb-item :to="{path: '/dashboard'}">规则引擎</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{path: '/dashboard/rule_manage'}">规则引擎</el-breadcrumb-item>
         <el-breadcrumb-item>规则编辑</el-breadcrumb-item>
       </el-breadcrumb>
       <el-form :model="ruleForm" :rules="ruleRules" ref="ruleForm" style="padding-left: 2%">
@@ -30,7 +30,7 @@
               <el-date-picker
                   v-model="ruleForm.dates"
                   type="datetimerange"
-                  value-format="yyyy-MM-dd HH:mm"
+                  value-format="yyyy-MM-dd HH:mm:ss"
                   range-separator="至"
                   start-placeholder="起始时间"
                   end-placeholder="结束时间"
@@ -41,7 +41,14 @@
           </el-form-item>
         </el-row>
         <el-row>
-          <b>触发条件</b>
+          <el-col :span="2">
+            <b>触发条件</b>
+          </el-col>
+          <el-col :span="2">
+            <el-tooltip content="多个触发器仅需满足一个，触发器内条件需同时满足" placement="right">
+              <i class="el-icon-question"></i>
+            </el-tooltip>
+          </el-col>
         </el-row>
 
         <!--产品 设备-->
@@ -74,7 +81,7 @@
 
         <!--触发器-->
         <div style="background-color: var(--theme-grey); margin-top: 10px"
-             v-for="(trigger, trigIdx) in ruleForm.triggers" :key="trigger">
+             v-for="(trigger, trigIdx) in ruleForm.triggers" :key="trigIdx">
           <el-row>
             <el-col :span="2" style="font-size: 15px; padding: 5px 0 0 10px">
               触发器{{trigIdx}}
@@ -84,9 +91,9 @@
             </el-col>
           </el-row>
           <el-row :gutter="5" style="margin-left: 8px; padding-top: 15px"
-                  v-for="(condition, condIdx) in trigger" :key="condition">
+                  v-for="(condition, condIdx) in trigger.conditions" :key="condIdx">
             <el-col :span="4">
-              <el-form-item prop="condition.property">
+              <el-form-item>
                 <el-select v-model="condition.property" :value="condition.property" placeholder="过滤条件">
                   <el-option
                       v-for="prop in properties[ruleForm.productId]"
@@ -98,7 +105,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="4">
-              <el-form-item prop="condition.operator">
+              <el-form-item>
                 <el-select v-model="condition.operator" :value="condition.operator" placeholder="操作符">
                   <el-option
                       v-for="op in operators"
@@ -110,7 +117,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="4">
-              <el-form-item prop="condition.value">
+              <el-form-item>
                 <el-input v-model="condition.value" placeholder="过滤条件值"></el-input>
               </el-form-item>
             </el-col>
@@ -131,7 +138,7 @@
           <b>执行动作</b>
         </el-row>
         <div style="background-color: var(--theme-grey); margin-top: 10px"
-             v-for="(action, actIdx) in ruleForm.actions" :key="action">
+             v-for="(action, actIdx) in ruleForm.actions" :key="'action' + actIdx">
           <el-row :gutter="5" style="margin-left: 8px; padding-top: 10px">
             <el-col :span="4">
               <el-select v-model="action.name" :value="action.name">
@@ -149,12 +156,12 @@
           </el-row>
           <!--action params-->
           <el-row :gutter="5" style="margin-left: 8px; padding-top: 10px"
-                  v-for="(param, pIdx) in action.params" :key="param">
+                  v-for="(param, pIdx) in action.params" :key="pIdx">
             <el-col :span="4">
-              <el-form-item prop="param.property">
+              <el-form-item>
                 <el-select v-model="param.property" :value="param.property">
                   <el-option
-                      v-for="prop in action.name === 'emailAction' ? [{name: 'email'}] : properties[ruleForm.productId]"
+                      v-for="prop in (action.name === 'mailAction' ? [{name: 'email'}] : properties[ruleForm.productId])"
                       :key="prop.name"
                       :label="prop.name"
                       :value="prop.name">
@@ -163,7 +170,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="4">
-              <el-form-item prop="param.value">
+              <el-form-item>
                 <el-input v-model="param.value" placeholder="名称"></el-input>
               </el-form-item>
             </el-col>
@@ -177,6 +184,18 @@
         </div>
         <el-row style="margin-left: 10px">
           <el-button type="text" icon="el-icon-plus" @click="addAction">新增执行动作</el-button>
+        </el-row>
+
+        <el-row>
+          <el-col :span="4">
+            <b>是否启动</b>
+            <el-switch
+                v-model="ruleForm.enabled"
+                active-color="#13ce66"
+                inactive-color="#ff4949"
+                style="margin: 5px 10px">
+            </el-switch>
+          </el-col>
         </el-row>
 
         <!--保存 重置-->
@@ -197,7 +216,7 @@ import Api from '../assets/js/api';
 export default {
   name: 'RuleEditor',
   props: {
-    'id': {
+    'rid': {
       type: Number,
       default: 0
     },
@@ -208,25 +227,41 @@ export default {
     }
   },
   mounted() {
-    Api.get('/get_categories', {restaurant: sessionStorage.getItem('id')}).then((data) => {
-      if (data) {
-        this.products = data;
-      }
-    }).catch(() => {
-    });
+    // Api.get('/get_categories', {restaurant: sessionStorage.getItem('id')}).then((data) => {
+    //   if (data) {
+    //     this.products = [];
+    //   }
+    // }).catch(() => {
+    // });
+    console.log(sessionStorage.getItem('projectId'));
     if (this.aim === 'modify') {
-      Api.get('/get_goods', {gid: this.gid}).then((data) => {
+      let url = '/rule-service/' + sessionStorage.getItem('projectId') + '/rules/' + this.rid;
+      let _this = this;
+      Api.get(url).then((data) => {
         if (data) {
-          this.ruleForm.name = data.name;
-          this.ruleForm.cgid = data.cgid;
-          this.ruleForm.description = data.description;
-          this.ruleForm.price = data.price;
-          this.ruleForm.dailySupply = data.dailySupply;
-          this.ruleForm.stock = data.stock;
+          _this.ruleForm.name = data.name;
+          _this.ruleForm.description = data.description;
+          _this.ruleForm.productId = data.productId;
+          _this.ruleForm.deviceId = data.deviceId;
+
           let dates = [];
-          dates[0] = data.startDate;
-          dates[1] = data.endDate;
-          this.ruleForm.dates = dates;
+          dates[0] = data.begin;
+          dates[1] = data.end;
+          _this.ruleForm.dates = dates;
+          _this.ruleForm.enabled = data.enabled;
+
+          _this.ruleForm.triggers = data.triggers;
+          let actions_ = [];
+          for (let i = 0; i < data.actions.length; i++) {
+            let action = {};
+            action['name'] = data.actions[i].name;
+            action['params'] = [];
+            for (let key in data.actions[i].params) {
+              action['params'].push({'property': key, 'value': data.actions[i].params[key]});
+            }
+            actions_.push(action);
+          }
+          _this.ruleForm.actions = actions_;
         }
       }).catch(() => {
       });
@@ -234,20 +269,27 @@ export default {
   },
   data() {
     return {
-      products: [],
-      devices: {},
-      properties: {},
+      products: [
+        {id: 1, name: '温度传感器'}
+      ],
+      devices: {
+        1: [{id: 1, name: '水温计'}]
+      },
+      properties: {
+        1: [{name: 'temperature'}]
+      },
       operators: ['==', '!=', '>', '<', '>=', '<='],
-      actions: [{name: 'emailAction', label: '邮件通知'}, {name: 'cmdAction', label: '控制设备'}],
+      actions: [{name: 'mailAction', label: '邮件通知'}, {name: 'cmdAction', label: '控制设备'}],
       /** form */
       ruleForm: {
         name: '',
         description: '',
         dates: [],
-        productId: undefined,
-        deviceId: undefined,
+        productId: null,
+        deviceId: null,
         triggers: [],
-        actions: []
+        actions: [],
+        enabled: true
       },
       ruleRules: {
         name: [
@@ -290,20 +332,21 @@ export default {
   },
   methods: {
     addTrigger() {
-      this.ruleForm.triggers.push([]);
+      console.log(this.ruleForm.triggers)
+      this.ruleForm.triggers.push({conditions: []});
     },
     deleteTrigger(trigIdx) {
       this.ruleForm.triggers.splice(trigIdx, 1);
     },
     addCondition(trigIdx) {
-      this.ruleForm.triggers[trigIdx].push({condition: '', operator: '', value: ''});
+      this.ruleForm.triggers[trigIdx].conditions.push({property: '', operator: '', value: ''});
     },
     deleteCondition(trigIdx, condIdx) {
-      this.ruleForm.triggers[trigIdx].splice(condIdx, 1);
+      this.ruleForm.triggers[trigIdx].conditions.splice(condIdx, 1);
     },
 
     addAction() {
-      this.ruleForm.actions.push({name: 'emailAction', params: []});
+      this.ruleForm.actions.push({name: 'mailAction', params: []});
     },
     deleteAction(actIdx) {
       this.ruleForm.actions.splice(actIdx, 1);
@@ -321,29 +364,61 @@ export default {
     submit(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          let formData = new FormData();
-          formData.append('name', this.ruleForm.name);
-          formData.append('description', this.ruleForm.description);
-          formData.append('category', this.ruleForm.cgid);
-          formData.append('price', this.ruleForm.price);
-          formData.append('stock', this.ruleForm.stock);
-          formData.append('dailySupply', this.ruleForm.dailySupply);
-          formData.append('startDate', this.ruleForm.dates[0]);
-          formData.append('endDate', this.ruleForm.dates[1]);
-          let url = '/add_goods';
-          if (this.aim === 'add') {
-            formData.append('restaurant', sessionStorage.getItem('id'));
-          } else if (this.aim === 'modify') {
-            url = '/modify_goods';
-            formData.append('gid', this.gid);
+          // for (let i  = 0; i < this.ruleForm.triggers.length; i++) {
+          //   if (this.ruleForm.deviceId) {
+          //     this.ruleForm.triggers[i].splice(0, 0,
+          //         {property: 'deviceId', operator: '==', value: this.ruleForm.deviceId});
+          //   }
+          //   if (this.ruleForm.productId) {
+          //     this.ruleForm.triggers[i].splice(0, 0,
+          //         {property: 'productId', operator: '==', value: this.ruleForm.productId});
+          //   }
+          // }
+          for (let i = 0; i < this.ruleForm.triggers.length; i++) {
+            this.ruleForm.triggers[i].conditions.forEach(condition => {
+              if (!isNaN(condition.value)) condition.value = Number(condition.value);
+            });
           }
-          Api.post(url, formData).then((data) => {
-            if (data.code === "SUCCESS") {
-              this.$message.success(data.msg);
-              this.$router.push('/restaurantCenter/goods');
-            } else this.$message.warning(data.msg);
-          }).catch(() => {
-          });
+          let actions_ = []
+          for (let i = 0; i < this.ruleForm.actions.length; i++) {
+            actions_.push({name: this.ruleForm.actions[i].name, params: {}});
+            let paramMap = {}
+            this.ruleForm.actions[i].params.forEach(param => {
+              if (!isNaN(param.value)) param.value = Number(param.value);
+              paramMap[param.property] = param.value;
+            });
+            actions_[i].params = paramMap
+          }
+          let rule = {};
+          rule['name'] = this.ruleForm.name;
+          rule['description'] = this.ruleForm.description;
+          rule['projectId'] = sessionStorage.getItem('projectId');
+          rule['productId'] = this.ruleForm.productId;
+          rule['deviceId'] = this.ruleForm.deviceId;
+          rule['triggers'] = this.ruleForm.triggers;
+          rule['actions'] =  actions_
+          rule['begin'] =  this.ruleForm.dates[0];
+          rule['end'] = this.ruleForm.dates[1];
+          rule['enabled'] = this.ruleForm.enabled;
+          let url = '/rule-service/' + sessionStorage.getItem('projectId') + '/rules';
+          if (this.aim === 'modify') {
+            rule['id'] =  this.rid;
+            Api.put(url, rule).then((data) => {
+              if (data) {
+                this.$message.success("修改规则成功");
+                this.$router.push('/dashboard/rule_manage');
+              } else this.$message.warning("修改规则失败");
+            }).catch(() => {
+            });
+          } else {
+            Api.post(url, rule).then((data) => {
+              if (data) {
+                this.$message.success("新建规则成功");
+                this.$router.push('/dashboard/rule_manage');
+              } else this.$message.warning("新建规则失败");
+            }).catch(() => {
+            });
+          }
         }
       });
     }
