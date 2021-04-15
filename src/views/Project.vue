@@ -4,10 +4,10 @@
       <span class="title">创建或选择进入您的项目</span>
     </div>
     <div style="width: 800px; margin: 50px 30% auto 30%">
-      <el-row gutter="10">
-        <el-col :span="8" v-for="prj in projects" :key="prj">
-          <div v-if="prj" @click="enter(prj)">
-            <div>{{ prj }}</div>
+      <el-row :gutter="10">
+        <el-col :span="8" v-for="prj in projects" :key="prj.projectId">
+          <div v-if="prj.projectId>=0" @click="enter(prj)">
+            <div>{{ prj.name }}</div>
             <img src="../assets/image/folder.png">
           </div>
           <div v-else @click="dialogVisible=true" class="project project-create" style="margin-top: 18px">
@@ -23,28 +23,64 @@
       <el-input v-model="projectName" placeholer="项目名称"></el-input>
       <span slot="footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="create">确 定</el-button>
+        <el-button type="primary" @click="create(projectName)">确 定</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
+import Api from '../assets/js/api';
+
 export default {
   name: "Project",
   data() {
     return {
       dialogVisible: false,
       projectName: '',
-      projects: ['test1', 'test2', 'tes3', 'test4', 'test5', null]
+      projects: [{name: 'project', userId: 'test',projectId:'0'}]
     }
   },
+  mounted(){
+    let url='/user-service/project/getUserProject?userId='+sessionStorage.getItem('id')
+    Api.get(url,{}).then((data)=>{
+      this.projects=[];
+      for (let i=0;i<data.length;i++){
+        this.projects.push(data[i])
+      }
+      this.projects.push({name:null,userId:null,projectId:-1});
+    }).catch();
+  },
   methods: {
-    enter: function (projectId) {
-      sessionStorage.setItem('projectId', '');
-      alert(projectId)
+
+    enter: function (project) {
+      sessionStorage.setItem('projectId', project.projectId);
+      sessionStorage.setItem('proJectName', project.name);
+      this.$router.push('/dashboard');
     },
-    create: function () {
+    create: function (name) {
+
+        if (name.length>0) {
+          let url='/user-service/project/create?name='+name+'&userId='+sessionStorage.getItem('id')
+          Api.post(url, {
+          }).then((data) => {
+            if (data.result=== "success") {
+/*              if (sessionStorage.getItem('id') !== data.userId) {
+                sessionStorage.setItem('id', data.userId);
+              }
+              if(sessionStorage.getItem('projectId')!==data.projectId){
+                sessionStorage.setItem('projectId', data.projectId);
+              }
+              if(sessionStorage.getItem('projectName')!==data.projectName){
+                sessionStorage.setItem('projectName', data.projectName);
+              }*/
+              location.reload();
+            } else {
+              this.$message.warning('创建失败！');
+            }
+          });
+        }
+
       this.dialogVisible = false;
     }
   }

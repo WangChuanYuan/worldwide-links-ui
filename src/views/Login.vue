@@ -54,20 +54,19 @@ export default {
     login: function (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          Api.post('/login', {
+          let url='/user-service/user/login?userId='+this.loginForm.id+'&password='+this.loginForm.password
+          Api.post(url, {
             'id': this.loginForm.id,
             'password': this.loginForm.password,
           }).then((data) => {
-            if (data.code === "SUCCESS") {
-              let user = data.value;
-              if (sessionStorage.getItem('id') !== user.id) {
+            if (data=== true) {
+              if (sessionStorage.getItem('id') !== this.loginForm.id) {
                 sessionStorage.clear();
-                sessionStorage.setItem('id', user.id);
-                sessionStorage.setItem('user', JSON.stringify(user));
+                sessionStorage.setItem('id', this.loginForm.id);
               }
-              this.$router.push('/managerCenter/registration');
+              this.$router.push('/project');
             } else {
-              this.$message.warning(data.msg);
+              this.$message.warning('登陆失败！');
             }
           });
         }
@@ -76,20 +75,19 @@ export default {
     register: function (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          Api.post('/login', {
+          let url='/user-service/user/regiser?userId='+this.loginForm.id+'&password='+this.loginForm.password
+          Api.post(url, {
             'id': this.loginForm.id,
             'password': this.loginForm.password,
           }).then((data) => {
-            if (data.code === "SUCCESS") {
-              let user = data.value;
-              if (sessionStorage.getItem('id') !== user.id) {
+            if (data=== true) {
+              if (sessionStorage.getItem('id') !== this.loginForm.id) {
                 sessionStorage.clear();
-                sessionStorage.setItem('id', user.id);
-                sessionStorage.setItem('user', JSON.stringify(user));
+                sessionStorage.setItem('id', this.loginForm.id);
               }
-              this.$router.push('/managerCenter/registration');
+              this.$router.push('/project');
             } else {
-              this.$message.warning(data.msg);
+              this.$message.warning('注册失败！');
             }
           });
         }
