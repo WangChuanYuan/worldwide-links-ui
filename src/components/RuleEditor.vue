@@ -332,7 +332,6 @@ export default {
   },
   methods: {
     addTrigger() {
-      console.log(this.ruleForm.triggers)
       this.ruleForm.triggers.push({conditions: []});
     },
     deleteTrigger(trigIdx) {
