@@ -136,6 +136,7 @@ export default {
 
           let url = '/rule-service/' + sessionStorage.getItem('projectId') + '/rules/_execute';
           Api.post(url, paramMap).then(() => {}).catch(() => {});
+          this.$message.success("消息发送成功");
         }
       })
     }

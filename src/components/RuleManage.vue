@@ -43,17 +43,31 @@
         </el-table-column>
       </el-table>
     </el-main>
+    <el-dialog title="日志" :visible.sync="dialogTableVisible">
+      <LogDisplay
+          :rule-id="logRuleId"
+          :product-id="logProductId"
+          :device-id="logDeviceId">
+      </LogDisplay>
+    </el-dialog>
   </el-container>
 </template>
 
 <script>
 import Api from '../assets/js/api';
+import LogDisplay from "@/components/LogDisplay";
 
 export default {
   name: 'RuleManage',
+  components: {LogDisplay},
   data() {
     return {
-      rules: []
+      rules: [],
+      dialogTableVisible: false,
+
+      logRuleId: null,
+      logProductId: null,
+      logDeviceId: null
     };
   },
   mounted() {
@@ -101,7 +115,8 @@ export default {
       });
     },
     viewLogs(rule) {
-      alert(rule)
+      this.logRuleId = rule.id;
+      this.dialogTableVisible = true;
     }
   }
 };
