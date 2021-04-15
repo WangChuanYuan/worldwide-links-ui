@@ -71,8 +71,8 @@ export default {
   name: 'DashBoard',
   data() {
     return {
-      id: '',
-      projectName: '',
+      userid: sessionStorage.getItem('id'),
+      projectName: sessionStorage.getItem('projectName'),
       isCollapsed: false
     }
   },

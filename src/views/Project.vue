@@ -6,9 +6,9 @@
     <div style="width: 800px; margin: 50px 30% auto 30%">
       <el-row :gutter="10">
         <el-col :span="8" v-for="prj in projects" :key="prj.projectId">
-          <div v-if="prj.projectId>=0" @click="enter(prj)">
-            <div>{{ prj.name }}</div>
-            <img src="../assets/image/folder.png">
+          <div v-if="prj.projectId>=0">
+            <div>{{ prj.name }}<el-button type="text" style="margin-left: 10px" @click="removePrj(prj.projectId)">删除</el-button></div>
+            <img src="../assets/image/folder.png" @click="enter(prj)">
           </div>
           <div v-else @click="dialogVisible=true" class="project project-create" style="margin-top: 18px">
             <i class="el-icon-plus plus-icon"></i>
@@ -55,8 +55,21 @@ export default {
 
     enter: function (project) {
       sessionStorage.setItem('projectId', project.projectId);
-      sessionStorage.setItem('proJectName', project.name);
+      sessionStorage.setItem('projectName', project.name);
       this.$router.push('/dashboard');
+    },
+    removePrj: function (prjId){
+      if(prjId>=0){
+        let url='/user-service/project/delete?projectId='+prjId;
+        Api.delete(url,{}).then((data)=>{
+          if(data===true){
+            this.$message.success("删除成功！");
+            location.reload();
+          }else {
+            this.$message.warning("删除失败！");
+          }
+        })
+      }
     },
     create: function (name) {
 
