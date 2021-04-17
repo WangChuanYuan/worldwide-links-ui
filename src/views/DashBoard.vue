@@ -11,10 +11,16 @@
         <el-menu-item style="margin: 30px 25px 30px 25px">
           <span class="logo">WordWide Links</span>
         </el-menu-item>
-        <el-menu-item index="device-manage">
-          <i class="el-icon-setting"></i>
-          <span>设备管理</span>
-        </el-menu-item>
+        <el-submenu index="device">
+          <template slot="title">
+            <i class="el-icon-setting"></i>
+             <span>设备管理</span>
+          </template>
+          <el-menu-item index="device-manage">设备生命周期管理</el-menu-item>
+          <el-menu-item index="device-create">设备创建</el-menu-item>
+          <el-menu-item index="device-modelPro">物模型-属性</el-menu-item>
+          <el-menu-item index="device-modelSer">物模型-服务</el-menu-item>
+        </el-submenu>
         <el-submenu index="rule">
           <template slot="title">
             <i class="el-icon-place"></i>
@@ -84,7 +90,19 @@ export default {
     navigation(key) {
       switch (key) {
         case 'device-manage':
-          this.$router.push('/');
+          this.$router.push('/dashboard/device_manage');
+          break;
+        case 'device-create':
+          this.$router.push('/dashboard/device_create');
+          break;
+        case 'device-modelPro':
+          this.$router.push('/dashboard/device_modelPro');
+          break;
+        case 'device-modelSer':
+          this.$router.push('/dashboard/device_modelSer');
+          break;
+        case 'device-modelEve':
+          this.$router.push('/dashboard/device_modelEve');
           break;
         case 'rule-manage':
           this.$router.push('/dashboard/rule_manage');
