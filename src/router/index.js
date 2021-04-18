@@ -12,6 +12,7 @@ import DeviceModePro from "@/components/DeviceModePro";
 import DeviceModeSer from "@/components/DeviceModelSer";
 import DeviceManage from "@/components/DeviceManage";
 import DeviceCreate from "@/components/DeviceCreate";
+import ProductManage from "@/components/ProductManage";
 
 Vue.use(Router);
 
@@ -55,6 +56,11 @@ export default new Router({
                     component: DeviceManage,
                     props: true
                 }, {
+                    path: 'product_manage',
+                    name: 'productManage',
+                    component: ProductManage,
+                    props: true
+                },{
                     path: 'device_create',
                     name: 'deviceCreate',
                     component: DeviceCreate,

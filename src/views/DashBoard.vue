@@ -16,8 +16,9 @@
             <i class="el-icon-setting"></i>
              <span>设备管理</span>
           </template>
-          <el-menu-item index="device-manage">设备生命周期管理</el-menu-item>
+          <el-menu-item index="device-manage">设备</el-menu-item>
           <el-menu-item index="device-create">设备创建</el-menu-item>
+          <el-menu-item index="product-manage">产品</el-menu-item>
           <el-menu-item index="device-modelPro">物模型-属性</el-menu-item>
           <el-menu-item index="device-modelSer">物模型-服务</el-menu-item>
         </el-submenu>
@@ -91,6 +92,9 @@ export default {
       switch (key) {
         case 'device-manage':
           this.$router.push('/dashboard/device_manage');
+          break;
+        case 'product-manage':
+          this.$router.push('/dashboard/product_manage');
           break;
         case 'device-create':
           this.$router.push('/dashboard/device_create');
