@@ -9,7 +9,12 @@
       </el-breadcrumb>
 
       <el-table :data="devices">
-        <el-table-column label="编号">
+        <el-table-column label="项目id">
+          <template slot-scope="scope">
+            <span>{{scope.row.projectId}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="产品编号">
           <template slot-scope="scope">
             <span>{{scope.row.deviceId}}</span>
           </template>
@@ -19,9 +24,24 @@
             <span>{{scope.row.deviceName}}</span>
           </template>
         </el-table-column>
+        <el-table-column label="产品id">
+          <template slot-scope="scope">
+            <span>{{scope.row.productId}}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="设备描述">
           <template slot-scope="scope">
             <span class="omission">{{scope.row.description}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="设备所属工厂">
+          <template slot-scope="scope">
+            <span>{{scope.row.industry}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="上/下线情况">
+          <template slot-scope="scope">
+            <span>{{scope.row.deviceState}}</span>
           </template>
         </el-table-column>
         <el-table-column label="设备状态">
@@ -37,10 +57,10 @@
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button type="text" @click="online(scope.row)">上线</el-button>
-            <el-button type="text" @click="offline(scope.row, scope.$index)">下线</el-button>
+            <el-button type="text" @click="offline(scope.row)">下线</el-button>
             <el-button type="text" @click="startDeivce(scope.row)">启用</el-button>
-            <el-button type="text" @click="endDevice(scope.row, scope.$index)">禁用</el-button>
-            <el-button type="text" @click="remove(scope.row)">删除</el-button>
+            <el-button type="text" @click="endDevice(scope.row)">禁用</el-button>
+            <el-button type="text" @click="remove(scope.row,scope.$index)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -80,14 +100,48 @@ export default {
     });
   },
   methods: {
-    changeEnabled(state, device) {
-      let url = '/device-service/create'
-      Api.put(url, device).then((data) => {
+    online(device) {
+      let url = '/device-service/device/onlineDevice/'+ device.deviceId
+      Api.get(url, device).then((data) => {
         if (data) {
-          this.$message.success("修改设备成功");
+          device.state = "上线";
+          this.$message.success("设备上线成功");
+        } else {
+          this.$message.warning("设备上线失败");
+
+        }
+      }).catch(() => {});
+    },
+    offline(device) {
+      let url = '/device-service/device/offlineDevice/'+device.deviceId
+      Api.get(url, device).then((data) => {
+        if (data) {
+          device.state = "下线";
+          this.$message.success("设备下线成功");
+        } else {
+          this.$message.warning("设备下线失败");
+        }
+      }).catch(() => {});
+    },
+    startDeivce(device) {
+      let url = '/device-service/device/startDevice/'+device.deviceId
+      Api.get(url, device).then((data) => {
+        if (data) {
+          device.state = "启用";
+          this.$message.success("设备启用成功");
         } else {
           this.$message.warning("修改设备失败");
-          device.state = !device.state;
+        }
+      }).catch(() => {});
+    },
+    endDevice(device) {
+      let url = '/device-service/device/endDevice/'+device.deviceId
+      Api.get(url, device).then((data) => {
+        if (data) {
+          device.state = "禁用";
+          this.$message.success("设备禁用成功");
+        } else {
+          this.$message.warning("设备禁用失败");
         }
       }).catch(() => {});
     },
@@ -100,7 +154,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        let url = '/device-service/device/delete/' + device.id
+        let url = '/device-service/device/delete/' + device.deviceId
         Api.delete(url).then((data) => {
           if (data) {
             this.$message.success("删除规则成功");

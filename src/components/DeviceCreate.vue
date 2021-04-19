@@ -257,7 +257,7 @@ export default {
           device['deviceName'] = this.deviceForm.name;
           device['description'] = this.deviceForm.description;
           device['projectId'] = sessionStorage.getItem('projectId');
-          let url = '/device-service/device/create';
+          let url = '/device-service/device/create/'+sessionStorage.getItem('projectId') ;
           if (this.aim === 'modify') {
             device['id'] =  this.rid;
             Api.put(url, device).then((data) => {

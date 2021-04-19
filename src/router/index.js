@@ -24,8 +24,8 @@ export default new Router({
             component: Login
         },
         {
-            path: '/device',
-            name: 'device',
+            path: '/project',
+            name: 'project',
             component: Project
         },
         {
