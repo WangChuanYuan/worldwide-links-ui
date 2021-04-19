@@ -21,6 +21,16 @@
               <el-input v-model="deviceForm.description" placeholder="描述"></el-input>
             </el-form-item>
           </el-col>
+          <el-col :span="6">
+            <el-form-item prop="industry" label="所属工厂">
+              <el-input v-model="deviceForm.industry" placeholder="所属工厂"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item prop="password" label="密码">
+              <el-input  v-model="deviceForm.password" placeholder="密码" show-password></el-input>
+            </el-form-item>
+          </el-col>
         </el-row>
         
         <el-row>
@@ -62,19 +72,6 @@
           </el-col>
         </el-row>
 
-
-        <el-row>
-          <el-col :span="4">
-            <b>是否激活</b>
-            <el-switch
-                v-model="deviceForm.enabled"
-                active-color="#13ce66"
-                inactive-color="#ff4949"
-                style="margin: 5px 10px">
-            </el-switch>
-          </el-col>
-        </el-row>
-
         <!--保存 重置-->
         <el-row>
           <el-col :span="6" :offset="4">
@@ -104,7 +101,16 @@ export default {
     }
   },
   mounted() {
-
+    let url = '/device-service/modelPro/getAll'
+    Api.get(url).then((data) => {
+      if (data) this.modelPros = data;
+    }).catch(() => {
+    });
+    url = '/device-service/modelServe/getAll'
+    Api.get(url).then((data) => {
+      if (data) this.modelServes = data;
+    }).catch(() => {
+    });
     console.log(sessionStorage.getItem('projectId'));
     if (this.aim === 'modify') {
       let url = '/device-service/' + sessionStorage.getItem('projectId') + '/rules/' + this.rid;
@@ -141,14 +147,8 @@ export default {
   },
   data() {
     return {
-      modelPros: [
-        {id: 1, name: '温度值'},
-        {id:2,name:'敏锐度'}
-      ],
-      modelServes: [
-        {id: 1, name: '测量温度'},
-         {id:2,name:'感应红外'}
-      ],
+      modelPros: [],
+      modelServes: [],
       properties: {
         1: [{name: 'temperature'}]
       },
@@ -158,6 +158,8 @@ export default {
       deviceForm: {
         name: '',
         description: '',
+        industry:'',
+        password:'',
         dates: [],
         modelProId: null,
         modelServeId: null,
@@ -257,6 +259,12 @@ export default {
           device['deviceName'] = this.deviceForm.name;
           device['description'] = this.deviceForm.description;
           device['projectId'] = sessionStorage.getItem('projectId');
+          device['industry'] = this.deviceForm.industry;
+          device['deviceState']='下线';
+          device['logo']='';
+          device['location']='';
+          device['username']=sessionStorage.getItem("userId");
+          device['password']=this.deviceForm.password;
           let url = '/device-service/device/create/'+sessionStorage.getItem('projectId') ;
           if (this.aim === 'modify') {
             device['id'] =  this.rid;

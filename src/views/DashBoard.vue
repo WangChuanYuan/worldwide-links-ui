@@ -19,8 +19,8 @@
           <el-menu-item index="device-manage">设备</el-menu-item>
           <el-menu-item index="device-create">设备创建</el-menu-item>
           <el-menu-item index="product-manage">产品</el-menu-item>
-          <el-menu-item index="device-modelPro">物模型-属性</el-menu-item>
-          <el-menu-item index="device-modelSer">物模型-服务</el-menu-item>
+          <el-menu-item index="product-create">产品创建</el-menu-item>
+          <el-menu-item index="device-modelPro">物模型</el-menu-item>
         </el-submenu>
         <el-submenu index="rule">
           <template slot="title">
@@ -95,6 +95,9 @@ export default {
           break;
         case 'product-manage':
           this.$router.push('/dashboard/product_manage');
+          break;
+        case 'product-create':
+          this.$router.push('/dashboard/product_create');
           break;
         case 'device-create':
           this.$router.push('/dashboard/device_create');

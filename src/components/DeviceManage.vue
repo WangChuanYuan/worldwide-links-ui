@@ -9,16 +9,6 @@
       </el-breadcrumb>
 
       <el-table :data="devices">
-        <el-table-column label="项目id">
-          <template slot-scope="scope">
-            <span>{{scope.row.projectId}}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="产品编号">
-          <template slot-scope="scope">
-            <span>{{scope.row.deviceId}}</span>
-          </template>
-        </el-table-column>
         <el-table-column label="设备名称">
           <template slot-scope="scope">
             <span>{{scope.row.deviceName}}</span>
@@ -44,22 +34,10 @@
             <span>{{scope.row.deviceState}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="设备状态">
-          <template slot-scope="scope">
-            <el-switch
-                v-model="scope.row.state"
-                active-color="#13ce66"
-                inactive-color="#ff4949"
-                @change="changeEnabled($event, scope.row)">
-            </el-switch>
-          </template>
-        </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button type="text" @click="online(scope.row)">上线</el-button>
-            <el-button type="text" @click="offline(scope.row)">下线</el-button>
-            <el-button type="text" @click="startDeivce(scope.row)">启用</el-button>
-            <el-button type="text" @click="endDevice(scope.row)">禁用</el-button>
+            <el-button v-if="scope.row.deviceState === '下线'" type="text" @click="online(scope.row)">上线</el-button>
+            <el-button v-else type="text" @click="offline(scope.row)">下线</el-button>
             <el-button type="text" @click="remove(scope.row,scope.$index)">删除</el-button>
           </template>
         </el-table-column>
@@ -104,7 +82,7 @@ export default {
       let url = '/device-service/device/onlineDevice/'+ device.deviceId
       Api.get(url, device).then((data) => {
         if (data) {
-          device.state = "上线";
+          device.deviceState = "上线";
           this.$message.success("设备上线成功");
         } else {
           this.$message.warning("设备上线失败");
@@ -116,7 +94,7 @@ export default {
       let url = '/device-service/device/offlineDevice/'+device.deviceId
       Api.get(url, device).then((data) => {
         if (data) {
-          device.state = "下线";
+          device.deviceState = "下线";
           this.$message.success("设备下线成功");
         } else {
           this.$message.warning("设备下线失败");
