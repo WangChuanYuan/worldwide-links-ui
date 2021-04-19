@@ -55,12 +55,14 @@
         <el-row style="padding-top: 15px">
           <el-col :span="6">
             <el-form-item prop="productId" label="产品">
-              <el-select v-model="ruleForm.productId" :value="ruleForm.productId">
+              <el-select v-model="ruleForm.productId"
+                         :value="ruleForm.productId"
+                         @change="changeProduct($event)">
                 <el-option
                     v-for="p in products"
-                    :key="p.id"
-                    :label="p.name"
-                    :value="p.id">
+                    :key="p.productId"
+                    :label="p.productName"
+                    :value="p.productId">
                 </el-option>
               </el-select>
             </el-form-item>
@@ -70,9 +72,9 @@
               <el-select v-model="ruleForm.deviceId" :value="ruleForm.deviceId">
                 <el-option
                     v-for="d in devices[ruleForm.productId]"
-                    :key="d.id"
-                    :label="d.name"
-                    :value="d.id">
+                    :key="d.deviceId"
+                    :label="d.deviceName"
+                    :value="d.deviceId">
                 </el-option>
               </el-select>
             </el-form-item>
@@ -141,7 +143,10 @@
              v-for="(action, actIdx) in ruleForm.actions" :key="'action' + actIdx">
           <el-row :gutter="5" style="margin-left: 8px; padding-top: 10px">
             <el-col :span="4">
-              <el-select v-model="action.name" :value="action.name">
+              <el-select
+                  v-model="action.name"
+                  :value="action.name"
+                  @change="changeAction($event, actIdx)">
                 <el-option
                     v-for="act in actions"
                     :key="act.name"
@@ -149,6 +154,32 @@
                     :value="act.name">
                 </el-option>
               </el-select>
+            </el-col>
+            <el-col :span="6" v-if="action.name === 'ctrlAction'">
+              <el-form-item label="产品">
+                <el-select v-model="action.productId"
+                           :value="action.productId"
+                           @change="changeProduct($event)">
+                  <el-option
+                      v-for="p in products"
+                      :key="p.id"
+                      :label="p.name"
+                      :value="p.id">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item v-if="action.productId" label="设备">
+                <el-select v-model="action.deviceId" :value="action.deviceId">
+                  <el-option
+                      v-for="d in devices[action.productId]"
+                      :key="d.deviceId"
+                      :label="d.deviceName"
+                      :value="d.deviceId">
+                  </el-option>
+                </el-select>
+              </el-form-item>
             </el-col>
             <el-col :span="4">
               <el-button type="text" @click="deleteAction(actIdx)">删除</el-button>
@@ -227,13 +258,15 @@ export default {
     }
   },
   mounted() {
-    // Api.get('/get_categories', {restaurant: sessionStorage.getItem('id')}).then((data) => {
-    //   if (data) {
-    //     this.products = [];
-    //   }
-    // }).catch(() => {
-    // });
-    console.log(sessionStorage.getItem('projectId'));
+    Api.get('/device-service/product/getAll',
+        {projectId: Number(sessionStorage.getItem('projectId'))})
+        .then((data) => {
+          if (data) {
+            this.products = data;
+            // TODO properties
+          }
+        }).catch(() => {});
+
     if (this.aim === 'modify') {
       let url = '/rule-service/' + sessionStorage.getItem('projectId') + '/rules/' + this.rid;
       let _this = this;
@@ -257,7 +290,13 @@ export default {
             action['name'] = data.actions[i].name;
             action['params'] = [];
             for (let key in data.actions[i].params) {
-              action['params'].push({'property': key, 'value': data.actions[i].params[key]});
+              if (key === 'productId') {
+                action['productId'] = data.actions[i].params['productId'];
+              }
+              else if (key === 'deviceId') {
+                action['deviceId'] = data.actions[i].params['deviceId'];
+              }
+              else action['params'].push({'property': key, 'value': data.actions[i].params[key]});
             }
             actions_.push(action);
           }
@@ -270,16 +309,16 @@ export default {
   data() {
     return {
       products: [
-        {id: 1, name: '温度传感器'}
+        {productId: 1, productName: '温度传感器'}
       ],
       devices: {
-        1: [{id: 1, name: '水温计'}]
+        1: [{deviceId: 1, deviceName: '水温计'}, {deviceId: 2, deviceName: '体温仪'}]
       },
       properties: {
         1: [{name: 'temperature'}]
       },
       operators: ['==', '!=', '>', '<', '>=', '<='],
-      actions: [{name: 'mailAction', label: '邮件通知'}, {name: 'cmdAction', label: '控制设备'}],
+      actions: [{name: 'mailAction', label: '邮件通知'}, {name: 'ctrlAction', label: '控制设备'}],
       /** form */
       ruleForm: {
         name: '',
@@ -357,6 +396,27 @@ export default {
       this.ruleForm.actions[actIdx].params.splice(pIdx, 1);
     },
 
+    changeAction(actionName, actIdx) {
+      if (actionName === 'ctrlAction') {
+        // 默认控制本设备
+        if (this.ruleForm.productId)
+          this.ruleForm.actions[actIdx].productId = Number(this.ruleForm.productId);
+        if (this.ruleForm.deviceId)
+          this.ruleForm.actions[actIdx].deviceId = Number(this.ruleForm.deviceId);
+      } else {
+        this.ruleForm.actions[actIdx].productId = null;
+        this.ruleForm.actions[actIdx].deviceId = null;
+      }
+    },
+    changeProduct(productId) {
+      Api.get('/device-service//device/getDeviceByProduct', {productId: productId})
+          .then((data) => {
+            if (data) {
+              this.devices[productId] = data;
+            }
+          }).catch(() => {});
+    },
+
     reset(formName) {
       this.$refs[formName].resetFields();
     },
@@ -382,6 +442,12 @@ export default {
           for (let i = 0; i < this.ruleForm.actions.length; i++) {
             actions_.push({name: this.ruleForm.actions[i].name, params: {}});
             let paramMap = {}
+            if (this.ruleForm.actions[i].productId) {
+              paramMap['productId'] = Number(this.ruleForm.actions[i].productId);
+            }
+            if (this.ruleForm.actions[i].deviceId) {
+              paramMap['deviceId'] = Number(this.ruleForm.actions[i].deviceId);
+            }
             this.ruleForm.actions[i].params.forEach(param => {
               if (!isNaN(param.value)) param.value = Number(param.value);
               paramMap[param.property] = param.value;
