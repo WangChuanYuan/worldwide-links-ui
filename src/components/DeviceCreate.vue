@@ -35,70 +35,27 @@
         </el-row>
 
 
-        <el-row>
+        <el-row el-row style="padding-top: 15px">
           <el-col :span="2">
-            <b>物模型属性</b>
+            <b>所属产品</b>
           </el-col>
           <el-col :span="2">
-            <el-tooltip content="物模型属性" placement="right">
+            <el-tooltip content="所属产品" placement="right">
               <i class="el-icon-question"></i>
             </el-tooltip>
           </el-col>
         </el-row>
-        <div style="background-color: var(--theme-grey); margin-top: 10px"
-             v-for="(modelPro, modelProIdx) in deviceForm.modelPro" :key="modelProIdx">
-          <el-row :gutter="5" style="margin-left: 8px; padding-top: 10px">
-            <el-col :span="4">
-              <el-select v-model="modelPro.name" :value="modelPro.name">
-                <el-option
-                    v-for="modelPro in modelPros"
-                    :key="modelPro.id"
-                    :label="modelPro.name"
-                    :value="modelPro.name">
-                </el-option>
-              </el-select>
-            </el-col>
-            <el-col :span="4">
-              <el-button type="text" @click="deleteModelPro(actIdx)">删除</el-button>
-            </el-col>
-          </el-row>
-        </div>
-        <el-row style="margin-left: 10px">
-          <el-button type="text" icon="el-icon-plus" @click="addModelPro">新增物模型属性</el-button>
-        </el-row>
 
-        <el-row>
-          <el-col :span="2">
-            <b>物模型服务</b>
-          </el-col>
-          <el-col :span="2">
-            <el-tooltip content="物模型服务" placement="right">
-              <i class="el-icon-question"></i>
-            </el-tooltip>
-          </el-col>
-        </el-row>
-        <div style="background-color: var(--theme-grey); margin-top: 10px"
-             v-for="(modelServe, modelServeIdx) in deviceForm.modelServe" :key="modelServeIdx">
-          <el-row :gutter="5" style="margin-left: 8px; padding-top: 10px">
-            <el-col :span="4">
-              <el-select v-model="modelServe.name" :value="modelServe.name">
-                <el-option
-                    v-for="modelServe in modelServes"
-                    :key="modelServe.id"
-                    :label="modelServe.name"
-                    :value="modelServe.name">
-                </el-option>
-              </el-select>
-            </el-col>
-            <el-col :span="4">
-              <el-button type="text" @click="deleteModelServe(actIdx)">删除</el-button>
-            </el-col>
-          </el-row>
-        </div>
-        <el-row style="margin-left: 10px">
-          <el-button type="text" icon="el-icon-plus" @click="addModelServe">新增物模型服务</el-button>
-        </el-row>
-
+        <el-form-item prop="productId" label="产品">
+          <el-select v-model="deviceForm.productId"  :value="deviceForm.productId">
+            <el-option
+                v-for="p in products"
+                :key="p.productId"
+                :label="p.productName"
+                :value="p.productId">
+            </el-option>
+          </el-select>
+        </el-form-item>
 
         <!--        &lt;!&ndash;产品 设备&ndash;&gt;-->
 <!--        <el-row style="padding-top: 15px">-->
@@ -141,16 +98,20 @@
     <el-dialog title="物模型属性" :visible.sync="modelProVisible">
       <DeviceModelPro :model-pro="modelPro2Edit" @close="modelProVisible=false"></DeviceModelPro>
     </el-dialog>
+    <el-dialog title="物模型服务" :visible.sync="modelServeVisible">
+      <DeviceModelSer :model-pro="modelServe2Edit" @close="modelServeVisible=false"></DeviceModelSer>
+    </el-dialog>
   </el-container>
 </template>
 
 <script>
 import Api from '../assets/js/api';
 import DeviceModelPro from "@/components/DeviceModePro";
+import DeviceModelSer from "@/components/DeviceModelSer";
 
 export default {
   name: 'DeviceCreate',
-  components: {DeviceModelPro},
+  components: {DeviceModelPro,DeviceModelSer},
   props: {
     'rid': {
       type: Number,
@@ -173,7 +134,12 @@ export default {
       if (data) this.modelServes = data;
     }).catch(() => {
     });
-    console.log(sessionStorage.getItem('projectId'));
+    url = '/device-service/product/getAll'
+    Api.get(url).then((data) => {
+      if (data) this.products = data;
+    }).catch(() => {
+    });
+    console.log(this.products);
     if (this.aim === 'modify') {
       let url = '/device-service/' + sessionStorage.getItem('projectId') + '/rules/' + this.rid;
       let _this = this;
@@ -223,6 +189,8 @@ export default {
       modelPros: [],
       modelServes: [],
 
+      products:[],
+
       /** form */
       deviceForm: {
         name: '',
@@ -234,7 +202,8 @@ export default {
         modelServe: [],
         triggers: [],
         actions: [],
-        enabled: true
+        enabled: true,
+        productId:'',
       },
       ruleRules: {
         name: [
@@ -278,16 +247,11 @@ export default {
   methods: {
     addModelPro() {
       let tmp = {
-        modelType:'',
+        modelType:'modelPro',
         identifier:'',
         name: '',
         description: '',
-        dates: [],
         dataType: null,
-        deviceId: null,
-        triggers: [],
-        actions: [],
-        enabled: true,
         accessMode:'',
       }
       this.deviceForm.modelPro.push(tmp);
@@ -304,8 +268,7 @@ export default {
         dates: [],
         dataType: null,
         deviceId: null,
-        triggers: [],
-        actions: [],
+        params:[],
         enabled: true,
         accessMode:'',
       }
@@ -353,7 +316,9 @@ export default {
           device['logo']='';
           device['location']='';
           device['username']=sessionStorage.getItem("userId");
+          console.log(this.deviceForm.productId);
           device['password']=this.deviceForm.password;
+          device['productId']=this.deviceForm.productId;
           let url = '/device-service/device/create/'+sessionStorage.getItem('projectId') ;
           if (this.aim === 'modify') {
             device['id'] =  this.rid;

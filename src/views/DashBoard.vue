@@ -16,11 +16,10 @@
             <i class="el-icon-setting"></i>
              <span>设备管理</span>
           </template>
-          <el-menu-item index="device-manage">设备</el-menu-item>
+          <el-menu-item index="device-manage">设备列表</el-menu-item>
           <el-menu-item index="device-create">设备创建</el-menu-item>
-          <el-menu-item index="product-manage">产品</el-menu-item>
+          <el-menu-item index="product-manage">产品列表</el-menu-item>
           <el-menu-item index="product-create">产品创建</el-menu-item>
-<!--          <el-menu-item index="device-modelPro">物模型</el-menu-item>-->
         </el-submenu>
         <el-submenu index="rule">
           <template slot="title">
