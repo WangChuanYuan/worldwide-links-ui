@@ -1,24 +1,29 @@
 <template>
   <el-container>
     <el-main style="padding-top: 0">
-      <h3>物模型</h3>
+      <h3>物模型创建</h3>
       <hr/>
       <el-breadcrumb separator-class="el-icon-arrow-right" style="padding: 10px 0 10px 30px">
         <el-breadcrumb-item :to="{path: '/dashboard/device_manage'}">设备管理</el-breadcrumb-item>
-        <el-breadcrumb-item>物模型-属性</el-breadcrumb-item>
+        <el-breadcrumb-item>物模型创建</el-breadcrumb-item>
       </el-breadcrumb>
-      <el-form :model="ruleForm" :rules="ruleRules" ref="ruleForm" style="padding-left: 2%">
+      <el-form :model="modelForm" :rules="ruleRules" ref="modelForm" style="padding-left: 2%">
 
         <!--名称 描述-->
         <el-row :gutter="10">
           <el-col :span="4">
             <el-form-item prop="name" label="名称">
-              <el-input v-model="ruleForm.name" placeholder="名称"></el-input>
+              <el-input v-model="modelForm.name" placeholder="名称"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="4">
+            <el-form-item prop="identifier" label="标识符">
+              <el-input v-model="modelForm.identifier" placeholder="标识符"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item prop="description" label="描述">
-              <el-input v-model="ruleForm.description" placeholder="描述"></el-input>
+              <el-input v-model="modelForm.description" placeholder="描述"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -37,10 +42,22 @@
         <!--类型 读写-->
         <el-row style="padding-top: 15px">
           <el-col :span="6">
-            <el-form-item prop="productId" label="数据类型">
-              <el-select v-model="ruleForm.productId" :value="ruleForm.productId">
+            <el-form-item prop="modelType" label="物模型类型">
+              <el-select v-model="modelForm.modelType" :value="modelForm.modelType">
                 <el-option
-                    v-for="p in products"
+                    v-for="p in modelType"
+                    :key="p.id"
+                    :label="p.name"
+                    :value="p.name">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item  v-if="modelForm.modelType" prop="dataType" label="数据类型">
+              <el-select v-model="modelForm.dataType" :value="modelForm.dataType">
+                <el-option
+                    v-for="p in dateType"
                     :key="p.id"
                     :label="p.name"
                     :value="p.id">
@@ -49,10 +66,10 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item v-if="ruleForm.productId" prop="deviceId" label="读写权限">
-              <el-select v-model="ruleForm.deviceId" :value="ruleForm.deviceId">
+            <el-form-item v-if="modelForm.dataType" prop="deviceId" label="读写权限">
+              <el-select v-model="modelForm.accessMode" :value="modelForm.accessMode">
                 <el-option
-                    v-for="d in devices[ruleForm.productId]"
+                    v-for="d in accessMode"
                     :key="d.id"
                     :label="d.name"
                     :value="d.id">
@@ -62,118 +79,13 @@
           </el-col>
         </el-row>
 
-        <!--触发器-->
-        <div style="background-color: var(--theme-grey); margin-top: 10px"
-             v-for="(trigger, trigIdx) in ruleForm.triggers" :key="trigIdx">
-          <el-row>
-            <el-col :span="2" style="font-size: 15px; padding: 5px 0 0 10px">
-              触发器{{trigIdx}}
-            </el-col>
-            <el-col :span="1">
-              <el-button type="text" @click="deleteTrigger(trigIdx)">删除</el-button>
-            </el-col>
-          </el-row>
-          <el-row :gutter="5" style="margin-left: 8px; padding-top: 15px"
-                  v-for="(condition, condIdx) in trigger.conditions" :key="condIdx">
-            <el-col :span="4">
-              <el-form-item>
-                <el-select v-model="condition.property" :value="condition.property" placeholder="过滤条件">
-                  <el-option
-                      v-for="prop in properties[ruleForm.productId]"
-                      :key="prop.name"
-                      :label="prop.name"
-                      :value="prop.name">
-                  </el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="4">
-              <el-form-item>
-                <el-select v-model="condition.operator" :value="condition.operator" placeholder="操作符">
-                  <el-option
-                      v-for="op in operators"
-                      :key="op"
-                      :label="op"
-                      :value="op">
-                  </el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="4">
-              <el-form-item>
-                <el-input v-model="condition.value" placeholder="过滤条件值"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="4" :offset="2">
-              <el-button type="text" @click="deleteCondition(trigIdx, condIdx)">删除</el-button>
-            </el-col>
-          </el-row>
-          <el-row style="margin-left: 10px">
-            <el-button type="text" @click="addCondition(trigIdx)">添加</el-button>
-          </el-row>
-        </div>
-        <el-row style="margin-left: 10px">
-          <el-button type="text" icon="el-icon-plus" @click="addTrigger">新增触发器</el-button>
-        </el-row>
 
-        <!--执行动作-->
-        <el-row>
-          <b>执行动作</b>
-        </el-row>
-        <div style="background-color: var(--theme-grey); margin-top: 10px"
-             v-for="(action, actIdx) in ruleForm.actions" :key="'action' + actIdx">
-          <el-row :gutter="5" style="margin-left: 8px; padding-top: 10px">
-            <el-col :span="4">
-              <el-select v-model="action.name" :value="action.name">
-                <el-option
-                    v-for="act in actions"
-                    :key="act.name"
-                    :label="act.label"
-                    :value="act.name">
-                </el-option>
-              </el-select>
-            </el-col>
-            <el-col :span="4">
-              <el-button type="text" @click="deleteAction(actIdx)">删除</el-button>
-            </el-col>
-          </el-row>
-          <!--action params-->
-          <el-row :gutter="5" style="margin-left: 8px; padding-top: 10px"
-                  v-for="(param, pIdx) in action.params" :key="pIdx">
-            <el-col :span="4">
-              <el-form-item>
-                <el-select v-model="param.property" :value="param.property">
-                  <el-option
-                      v-for="prop in (action.name === 'mailAction' ? [{name: 'email'}] : properties[ruleForm.productId])"
-                      :key="prop.name"
-                      :label="prop.name"
-                      :value="prop.name">
-                  </el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="4">
-              <el-form-item>
-                <el-input v-model="param.value" placeholder="名称"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="4" :offset="2">
-              <el-button type="text" @click="deleteParam(actIdx, pIdx)">删除</el-button>
-            </el-col>
-          </el-row>
-          <el-row style="margin-left: 10px">
-            <el-button type="text" @click="addParam(actIdx)">添加</el-button>
-          </el-row>
-        </div>
-        <el-row style="margin-left: 10px">
-          <el-button type="text" icon="el-icon-plus" @click="addAction">新增执行动作</el-button>
-        </el-row>
 
         <el-row>
           <el-col :span="4">
             <b>是否启动</b>
             <el-switch
-                v-model="ruleForm.enabled"
+                v-model="modelForm.enabled"
                 active-color="#13ce66"
                 inactive-color="#ff4949"
                 style="margin: 5px 10px">
@@ -184,8 +96,8 @@
         <!--保存 重置-->
         <el-row>
           <el-col :span="6" :offset="4">
-            <el-button type="primary" @click="submit('ruleForm')">保存</el-button>
-            <el-button type="plain" @click="reset('ruleForm')">重置</el-button>
+            <el-button type="primary" @click="submit('modelForm')">保存</el-button>
+            <el-button type="plain" @click="reset('modelForm')">重置</el-button>
           </el-col>
         </el-row>
       </el-form>
@@ -207,33 +119,32 @@ export default {
       // add || modify
       type: String,
       default: 'add'
+    },
+    'modelPro': {
+      type: Object,
+      default: null
     }
   },
   mounted() {
-    // Api.get('/get_categories', {restaurant: sessionStorage.getItem('id')}).then((data) => {
-    //   if (data) {
-    //     this.products = [];
-    //   }
-    // }).catch(() => {
-    // });
+
     console.log(sessionStorage.getItem('projectId'));
     if (this.aim === 'modify') {
       let url = '/rule-service/' + sessionStorage.getItem('projectId') + '/rules/' + this.rid;
       let _this = this;
       Api.get(url).then((data) => {
         if (data) {
-          _this.ruleForm.name = data.name;
-          _this.ruleForm.description = data.description;
-          _this.ruleForm.productId = data.productId;
-          _this.ruleForm.deviceId = data.deviceId;
+          _this.modelForm.name = data.name;
+          _this.modelForm.description = data.description;
+          _this.modelForm.productId = data.productId;
+          _this.modelForm.deviceId = data.deviceId;
 
           let dates = [];
           dates[0] = data.begin;
           dates[1] = data.end;
-          _this.ruleForm.dates = dates;
-          _this.ruleForm.enabled = data.enabled;
+          _this.modelForm.dates = dates;
+          _this.modelForm.accessMode = data.accessMode;
 
-          _this.ruleForm.triggers = data.triggers;
+          _this.modelForm.triggers = data.triggers;
           let actions_ = [];
           for (let i = 0; i < data.actions.length; i++) {
             let action = {};
@@ -244,7 +155,7 @@ export default {
             }
             actions_.push(action);
           }
-          _this.ruleForm.actions = actions_;
+          _this.modelForm.actions = actions_;
         }
       }).catch(() => {
       });
@@ -252,33 +163,47 @@ export default {
   },
   data() {
     return {
-      products: [
+      modelType: [
+        {id: 1, name: 'modelPro'}, {id: 2, name: 'modelServe'},{id: 3, name: 'modelEvent'}
+      ],
+      dateType: [
         {id: 1, name: 'int'}, {id: 2, name: 'double'}, {id: 3, name: 'string'}, {id: 4, name: 'Long'}
       ],
-      devices: {
-        1: [{id: 1, name: '只读'},{id: 2, name: '只写'},{id: 3, name: '允许读写'}]
-      },
+      accessMode: [
+        {id: 1, name: '只读'},{id: 2, name: '只写'},{id: 3, name: '允许读写'}
+      ],
       properties: {
         1: [{name: 'temperature'}]
       },
       operators: ['==', '!=', '>', '<', '>=', '<='],
       actions: [{name: 'mailAction', label: '邮件通知'}, {name: 'cmdAction', label: '控制设备'}],
       /** form */
-      ruleForm: {
-        name: '',
-        description: '',
-        dates: [],
-        productId: null,
-        deviceId: null,
-        triggers: [],
-        actions: [],
-        enabled: true
-      },
+      // modelForm: {
+      //   modelType:'',
+      //   identifier:'',
+      //   name: '',
+      //   description: '',
+      //   dates: [],
+      //   dataType: null,
+      //   deviceId: null,
+      //   triggers: [],
+      //   actions: [],
+      //   enabled: true,
+      //   accessMode:'',
+      // },
+      modelForm: this.modelPro,
       ruleRules: {
         name: [
           {
             required: true,
             message: '请输入规则名称',
+            trigger: 'blur'
+          }
+        ],
+        identifier: [
+          {
+            required: true,
+            message: '请输入标识符名称',
             trigger: 'blur'
           }
         ],
@@ -315,29 +240,29 @@ export default {
   },
   methods: {
     addTrigger() {
-      this.ruleForm.triggers.push({conditions: []});
+      this.modelForm.triggers.push({conditions: []});
     },
     deleteTrigger(trigIdx) {
-      this.ruleForm.triggers.splice(trigIdx, 1);
+      this.modelForm.triggers.splice(trigIdx, 1);
     },
     addCondition(trigIdx) {
-      this.ruleForm.triggers[trigIdx].conditions.push({property: '', operator: '', value: ''});
+      this.modelForm.triggers[trigIdx].conditions.push({property: '', operator: '', value: ''});
     },
     deleteCondition(trigIdx, condIdx) {
-      this.ruleForm.triggers[trigIdx].conditions.splice(condIdx, 1);
+      this.modelForm.triggers[trigIdx].conditions.splice(condIdx, 1);
     },
 
     addAction() {
-      this.ruleForm.actions.push({name: 'mailAction', params: []});
+      this.modelForm.actions.push({name: 'mailAction', params: []});
     },
     deleteAction(actIdx) {
-      this.ruleForm.actions.splice(actIdx, 1);
+      this.modelForm.actions.splice(actIdx, 1);
     },
     addParam(actIdx) {
-      this.ruleForm.actions[actIdx].params.push({property: '', value: ''});
+      this.modelForm.actions[actIdx].params.push({property: '', value: ''});
     },
     deleteParam(actIdx, pIdx) {
-      this.ruleForm.actions[actIdx].params.splice(pIdx, 1);
+      this.modelForm.actions[actIdx].params.splice(pIdx, 1);
     },
 
     reset(formName) {
@@ -346,46 +271,34 @@ export default {
     submit(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          // for (let i  = 0; i < this.ruleForm.triggers.length; i++) {
-          //   if (this.ruleForm.deviceId) {
-          //     this.ruleForm.triggers[i].splice(0, 0,
-          //         {property: 'deviceId', operator: '==', value: this.ruleForm.deviceId});
-          //   }
-          //   if (this.ruleForm.productId) {
-          //     this.ruleForm.triggers[i].splice(0, 0,
-          //         {property: 'productId', operator: '==', value: this.ruleForm.productId});
-          //   }
-          // }
-          for (let i = 0; i < this.ruleForm.triggers.length; i++) {
-            this.ruleForm.triggers[i].conditions.forEach(condition => {
+
+          for (let i = 0; i < this.modelForm.triggers.length; i++) {
+            this.modelForm.triggers[i].conditions.forEach(condition => {
               if (!isNaN(condition.value)) condition.value = Number(condition.value);
             });
           }
           let actions_ = []
-          for (let i = 0; i < this.ruleForm.actions.length; i++) {
-            actions_.push({name: this.ruleForm.actions[i].name, params: {}});
+          for (let i = 0; i < this.modelForm.actions.length; i++) {
+            actions_.push({name: this.modelForm.actions[i].name, params: {}});
             let paramMap = {}
-            this.ruleForm.actions[i].params.forEach(param => {
+            this.modelForm.actions[i].params.forEach(param => {
               if (!isNaN(param.value)) param.value = Number(param.value);
               paramMap[param.property] = param.value;
             });
             actions_[i].params = paramMap
           }
-          let rule = {};
-          rule['name'] = this.ruleForm.name;
-          rule['description'] = this.ruleForm.description;
-          rule['projectId'] = sessionStorage.getItem('projectId');
-          rule['productId'] = this.ruleForm.productId;
-          rule['deviceId'] = this.ruleForm.deviceId;
-          rule['triggers'] = this.ruleForm.triggers;
-          rule['actions'] =  actions_
-          rule['begin'] =  this.ruleForm.dates[0];
-          rule['end'] = this.ruleForm.dates[1];
-          rule['enabled'] = this.ruleForm.enabled;
-          let url = '/rule-service/' + sessionStorage.getItem('projectId') + '/rules';
+          let model = {};
+          model['name'] = this.modelForm.name;
+          model['description'] = this.modelForm.description;
+          model['projectId'] = sessionStorage.getItem('projectId');
+          model['productId'] = this.modelForm.productId;
+          model['identifier'] = this.modelForm.identifier;
+          model['dataType'] = this.modelForm.dataType;
+          model['accessMode'] = this.modelForm.accessMode;
+          let url = '/device-service/' + this.modelForm.modelType + '/create';
           if (this.aim === 'modify') {
-            rule['id'] =  this.rid;
-            Api.put(url, rule).then((data) => {
+            model['id'] =  this.rid;
+            Api.put(url, model).then((data) => {
               if (data) {
                 this.$message.success("修改规则成功");
                 this.$router.push('/dashboard/rule_manage');
@@ -393,11 +306,12 @@ export default {
             }).catch(() => {
             });
           } else {
-            Api.post(url, rule).then((data) => {
+            Api.post(url, model).then((data) => {
               if (data) {
-                this.$message.success("新建规则成功");
-                this.$router.push('/dashboard/rule_manage');
-              } else this.$message.warning("新建规则失败");
+                this.$message.success("新建物模型成功");
+                this.$emit('close');
+                // this.$router.push('/dashboard/product_manage');
+              } else this.$message.warning("新建物模型失败");
             }).catch(() => {
             });
           }

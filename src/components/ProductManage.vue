@@ -19,12 +19,23 @@
             <span>{{scope.row.productName}}</span>
           </template>
         </el-table-column>
+        <el-table-column label="描述">
+          <template slot-scope="scope">
+            <span>{{scope.row.description}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="状态">
+          <template slot-scope="scope">
+            <el-switch
+                v-model="scope.row.enabled"
+                active-color="#13ce66"
+                inactive-color="#ff4949"
+                @change="changeEnabled($event, scope.row)">
+            </el-switch>
+          </template>
+        </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button type="text" @click="update(scope.row)">上线</el-button>
-            <el-button type="text" @click="remove(scope.row, scope.$index)">下线</el-button>
-            <el-button type="text" @click="update(scope.row)">启用</el-button>
-            <el-button type="text" @click="remove(scope.row, scope.$index)">禁用</el-button>
             <el-button type="text" @click="viewLogs(scope.row)">删除</el-button>
           </template>
         </el-table-column>

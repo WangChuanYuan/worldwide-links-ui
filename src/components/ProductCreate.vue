@@ -1,39 +1,59 @@
 <template>
   <el-container>
     <el-main style="padding-top: 0">
-      <h3>设备创建</h3>
+      <h3>产品创建</h3>
       <hr/>
       <el-breadcrumb separator-class="el-icon-arrow-right" style="padding: 10px 0 10px 30px">
         <el-breadcrumb-item :to="{path: '/dashboard/device_manange'}">设备管理</el-breadcrumb-item>
-        <el-breadcrumb-item>设备创建</el-breadcrumb-item>
+        <el-breadcrumb-item>产品创建</el-breadcrumb-item>
       </el-breadcrumb>
-      <el-form :model="deviceForm" :rules="ruleRules" ref="deviceForm" style="padding-left: 2%">
-
+      <el-form :model="productForm" :rules="ruleRules" ref="deviceForm" style="padding-left: 2%">
 
         <!--名称 描述-->
         <el-row :gutter="10">
           <el-col :span="4">
             <el-form-item prop="name" label="名称">
-              <el-input v-model="deviceForm.name" placeholder="名称"></el-input>
+              <el-input v-model="productForm.name" placeholder="名称"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item prop="description" label="描述">
-              <el-input v-model="deviceForm.description" placeholder="描述"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item prop="industry" label="所属工厂">
-              <el-input v-model="deviceForm.industry" placeholder="所属工厂"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item prop="password" label="密码">
-              <el-input  v-model="deviceForm.password" placeholder="密码" show-password></el-input>
+              <el-input v-model="productForm.description" placeholder="描述"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
 
+<!--        &lt;!&ndash;产品 设备&ndash;&gt;-->
+<!--        <el-row style="padding-top: 15px">-->
+<!--          <el-col :span="6">-->
+<!--            <el-form-item prop="modelProId" label="物模型-属性">-->
+<!--              <el-select v-model="productForm.modelProId" :value="productForm.modelProId">-->
+<!--                <el-option-->
+<!--                    v-for="p in modelPros"-->
+<!--                    :key="p.id"-->
+<!--                    :label="p.name"-->
+<!--                    :value="p.id">-->
+<!--                </el-option>-->
+<!--              </el-select>-->
+<!--            </el-form-item>-->
+<!--          </el-col>-->
+<!--          <el-col :span="6">-->
+<!--            <el-form-item v-if="productForm.modelProId" prop="modelServeId" label="物模型-服务">-->
+<!--              <el-select v-model="productForm.modelServeId" :value="productForm.modelServeId">-->
+<!--                <el-option-->
+<!--                    v-for="d in modelServes"-->
+<!--                    :key="d.id"-->
+<!--                    :label="d.name"-->
+<!--                    :value="d.id">-->
+<!--                </el-option>-->
+<!--              </el-select>-->
+<!--            </el-form-item>-->
+<!--          </el-col>-->
+<!--        </el-row>-->
+
+
+
+        <!--执行动作-->
 
         <el-row>
           <el-col :span="2">
@@ -46,7 +66,7 @@
           </el-col>
         </el-row>
         <div style="background-color: var(--theme-grey); margin-top: 10px"
-             v-for="(modelPro, modelProIdx) in deviceForm.modelPro" :key="modelProIdx">
+             v-for="(modelPro, modelProIdx) in productForm.modelPro" :key="modelProIdx">
           <el-row :gutter="5" style="margin-left: 8px; padding-top: 10px">
             <el-col :span="4">
               <el-select v-model="modelPro.name" :value="modelPro.name">
@@ -78,7 +98,7 @@
           </el-col>
         </el-row>
         <div style="background-color: var(--theme-grey); margin-top: 10px"
-             v-for="(modelServe, modelServeIdx) in deviceForm.modelServe" :key="modelServeIdx">
+             v-for="(modelServe, modelServeIdx) in productForm.modelServe" :key="modelServeIdx">
           <el-row :gutter="5" style="margin-left: 8px; padding-top: 10px">
             <el-col :span="4">
               <el-select v-model="modelServe.name" :value="modelServe.name">
@@ -100,34 +120,18 @@
         </el-row>
 
 
-        <!--        &lt;!&ndash;产品 设备&ndash;&gt;-->
-<!--        <el-row style="padding-top: 15px">-->
-<!--          <el-col :span="6">-->
-<!--            <el-form-item prop="modelProId" label="物模型-属性">-->
-<!--              <el-select v-model="deviceForm.modelProId" :value="deviceForm.modelProId">-->
-<!--                <el-option-->
-<!--                    v-for="p in modelPros"-->
-<!--                    :key="p.id"-->
-<!--                    :label="p.name"-->
-<!--                    :value="p.id">-->
-<!--                </el-option>-->
-<!--              </el-select>-->
-<!--            </el-form-item>-->
-<!--          </el-col>-->
-<!--          <el-col :span="6">-->
-<!--            <el-form-item v-if="deviceForm.modelProId" prop="modelServeId" label="物模型-服务">-->
-<!--              <el-select v-model="deviceForm.modelServeId" :value="deviceForm.modelServeId">-->
-<!--                <el-option-->
-<!--                    v-for="d in modelServes"-->
-<!--                    :key="d.id"-->
-<!--                    :label="d.name"-->
-<!--                    :value="d.id">-->
-<!--                </el-option>-->
-<!--              </el-select>-->
-<!--            </el-form-item>-->
-<!--          </el-col>-->
-<!--        </el-row>-->
 
+        <el-row>
+          <el-col :span="4">
+            <b>是否启动</b>
+            <el-switch
+                v-model="productForm.enabled"
+                active-color="#13ce66"
+                inactive-color="#ff4949"
+                style="margin: 5px 10px">
+            </el-switch>
+          </el-col>
+        </el-row>
 
         <!--保存 重置-->
         <el-row>
@@ -149,7 +153,7 @@ import Api from '../assets/js/api';
 import DeviceModelPro from "@/components/DeviceModePro";
 
 export default {
-  name: 'DeviceCreate',
+  name: 'ProductCreate',
   components: {DeviceModelPro},
   props: {
     'rid': {
@@ -221,14 +225,11 @@ export default {
 
 
       modelPros: [],
-      modelServes: [],
-
+      modelServes:[] ,
       /** form */
-      deviceForm: {
+      productForm: {
         name: '',
         description: '',
-        industry:'',
-        password:'',
         dates: [],
         modelPro: [],
         modelServe: [],
@@ -258,20 +259,20 @@ export default {
             trigger: 'blur'
           }
         ],
-        modelProId: [
-          {
-            required: true,
-            message: '请选择属性',
-            trigger: 'blur'
-          }
-        ],
-        modelServeId: [
-          {
-            required: false,
-            message: '请选择服务',
-            trigger: 'blur'
-          }
-        ]
+        // modelProId: [
+        //   {
+        //     required: true,
+        //     message: '请选择属性',
+        //     trigger: 'blur'
+        //   }
+        // ],
+        // modelServeId: [
+        //   {
+        //     required: false,
+        //     message: '请选择服务',
+        //     trigger: 'blur'
+        //   }
+        // ]
       }
     };
   },
@@ -290,7 +291,7 @@ export default {
         enabled: true,
         accessMode:'',
       }
-      this.deviceForm.modelPro.push(tmp);
+      this.productForm.modelPro.push(tmp);
       this.modelProVisible = true;
       this.modelPro2Edit = tmp;
     },
@@ -309,17 +310,18 @@ export default {
         enabled: true,
         accessMode:'',
       }
-      this.deviceForm.modelServe.push(tmp);
+      this.productForm.modelServe.push(tmp);
       this.modelServeVisible = true;
       this.modelServeEdit = tmp;
     },
     deleteModelPro(proIdx) {
-      this.deviceForm.modelPro.splice(proIdx, 1);
+      this.productForm.modelPro.splice(proIdx, 1);
     },
 
     deleteModelServe(serveIdx) {
-      this.deviceForm.modelServe.splice(serveIdx, 1);
+      this.productForm.modelServe.splice(serveIdx, 1);
     },
+
 
 
     reset(formName) {
@@ -329,35 +331,30 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
 
-          for (let i = 0; i < this.deviceForm.triggers.length; i++) {
-            this.deviceForm.triggers[i].conditions.forEach(condition => {
+          for (let i = 0; i < this.productForm.triggers.length; i++) {
+            this.productForm.triggers[i].conditions.forEach(condition => {
               if (!isNaN(condition.value)) condition.value = Number(condition.value);
             });
           }
           let actions_ = []
-          for (let i = 0; i < this.deviceForm.actions.length; i++) {
-            actions_.push({name: this.deviceForm.actions[i].name, params: {}});
+          for (let i = 0; i < this.productForm.actions.length; i++) {
+            actions_.push({name: this.productForm.actions[i].name, params: {}});
             let paramMap = {}
-            this.deviceForm.actions[i].params.forEach(param => {
+            this.productForm.actions[i].params.forEach(param => {
               if (!isNaN(param.value)) param.value = Number(param.value);
               paramMap[param.property] = param.value;
             });
             actions_[i].params = paramMap
           }
-          let device = {};
-          device['deviceName'] = this.deviceForm.name;
-          device['description'] = this.deviceForm.description;
-          device['projectId'] = sessionStorage.getItem('projectId');
-          device['industry'] = this.deviceForm.industry;
-          device['deviceState']='下线';
-          device['logo']='';
-          device['location']='';
-          device['username']=sessionStorage.getItem("userId");
-          device['password']=this.deviceForm.password;
-          let url = '/device-service/device/create/'+sessionStorage.getItem('projectId') ;
+          let product = {};
+          product['productName'] = this.productForm.name;
+          product['description'] = this.productForm.description;
+          product['enabled'] = this.productForm.enabled;
+          product['projectId'] = sessionStorage.getItem("projectId");
+          let url = '/device-service/product/create';
           if (this.aim === 'modify') {
-            device['id'] =  this.rid;
-            Api.put(url, device).then((data) => {
+            product['productId'] =  this.rid;
+            Api.put(url, product).then((data) => {
               if (data) {
                 this.$message.success("修改设备成功");
                 this.$router.push('/dashboard/device_manage');
@@ -365,11 +362,11 @@ export default {
             }).catch(() => {
             });
           } else {
-            Api.post(url, device).then((data) => {
+            Api.post(url, product).then((data) => {
               if (data) {
-                this.$message.success("新建设备成功");
-                this.$router.push('/dashboard/device_manage');
-              } else this.$message.warning("新建设备失败");
+                this.$message.success("产品成功");
+                this.$router.push('/dashboard/product_manage');
+              } else this.$message.warning("新建产品失败");
             }).catch(() => {
             });
           }
