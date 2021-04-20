@@ -106,12 +106,10 @@ export default {
       }
     },
     logout() {
-      Api.post('/logout').then((data) => {
-        if (data.code === "SUCCESS") {
+
           sessionStorage.clear();
           this.$router.push('/');
-        }
-      });
+
     }
   }
 };
