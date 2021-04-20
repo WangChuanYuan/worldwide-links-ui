@@ -42,7 +42,7 @@ export default {
     }
   },
   mounted(){
-    let url='/user-service/project/getUserProject?userId='+sessionStorage.getItem('id')
+    let url='/user-service/project/getUserProject?userId='+sessionStorage.getItem('userId')
     Api.get(url,{}).then((data)=>{
       this.projects=[];
       for (let i=0;i<data.length;i++){
@@ -74,7 +74,7 @@ export default {
     create: function (name) {
 
         if (name.length>0) {
-          let url='/user-service/project/create?name='+name+'&userId='+sessionStorage.getItem('id')
+          let url='/user-service/project/create?name='+name+'&userId='+sessionStorage.getItem('userId')
           Api.post(url, {
           }).then((data) => {
             if (data.result=== "success") {

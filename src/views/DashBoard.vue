@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import Api from '../assets/js/api';
+
 
 export default {
   name: 'DashBoard',
