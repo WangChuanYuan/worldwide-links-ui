@@ -99,9 +99,9 @@
                 <el-select v-model="condition.property" :value="condition.property" placeholder="过滤条件">
                   <el-option
                       v-for="prop in properties[ruleForm.productId]"
-                      :key="prop.name"
+                      :key="prop.identifier"
                       :label="prop.name"
-                      :value="prop.name">
+                      :value="prop.identifier">
                   </el-option>
                 </el-select>
               </el-form-item>
@@ -139,9 +139,9 @@
         <el-row>
           <b>执行动作</b>
         </el-row>
-        <div style="background-color: var(--theme-grey); margin-top: 10px"
+        <div style="background-color: var(--theme-grey); margin-top: 10px; padding-bottom: 8px"
              v-for="(action, actIdx) in ruleForm.actions" :key="'action' + actIdx">
-          <el-row :gutter="5" style="margin-left: 8px; padding-top: 10px">
+          <el-row :gutter="5" style="margin-left: 8px; padding-top: 8px">
             <el-col :span="4">
               <el-select
                   v-model="action.name"
@@ -162,9 +162,9 @@
                            @change="changeProduct($event)">
                   <el-option
                       v-for="p in products"
-                      :key="p.id"
-                      :label="p.name"
-                      :value="p.id">
+                      :key="p.productId"
+                      :label="p.productName"
+                      :value="p.productId">
                   </el-option>
                 </el-select>
               </el-form-item>
@@ -186,32 +186,67 @@
             </el-col>
           </el-row>
           <!--action params-->
-          <el-row :gutter="5" style="margin-left: 8px; padding-top: 10px"
-                  v-for="(param, pIdx) in action.params" :key="pIdx">
-            <el-col :span="4">
-              <el-form-item>
-                <el-select v-model="param.property" :value="param.property">
-                  <el-option
-                      v-for="prop in (action.name === 'mailAction' ? [{name: 'email'}] : properties[ruleForm.productId])"
-                      :key="prop.name"
-                      :label="prop.name"
-                      :value="prop.name">
-                  </el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="4">
-              <el-form-item>
-                <el-input v-model="param.value" placeholder="名称"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="4" :offset="2">
-              <el-button type="text" @click="deleteParam(actIdx, pIdx)">删除</el-button>
-            </el-col>
-          </el-row>
-          <el-row style="margin-left: 10px">
-            <el-button type="text" @click="addParam(actIdx)">添加</el-button>
-          </el-row>
+          <div v-if="action.name === 'ctrlAction'">
+            <el-row :gutter="5" style="margin-left: 8px; padding-top: 10px">
+              <el-col :span="4">
+                <el-form-item label="服务" v-if="action.productId">
+                  <el-select v-model="action.method"
+                             :value="action.method"
+                             @change="changeServe($event, actIdx)">
+                    <el-option
+                        v-for="serve in serves[action.productId]"
+                        :key="serve.identifier"
+                        :label="serve.name"
+                        :value="serve.identifier">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="5" style="margin-left: 8px; padding-top: 10px"
+                    v-for="(param, pIdx) in action.params" :key="pIdx">
+              <el-col :span="4">
+                <el-form-item>
+                  <el-input disabled v-model="param.property"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="4">
+                <el-form-item>
+                  <el-input v-model="param.value" placeholder="值"></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </div>
+
+          <div v-else>
+            <el-row :gutter="5" style="margin-left: 8px; padding-top: 10px"
+                    v-for="(param, pIdx) in action.params" :key="pIdx">
+              <el-col :span="4">
+                <el-form-item>
+                  <el-select v-model="param.property" :value="param.property">
+                    <el-option
+                        v-for="prop in (action.name === 'mailAction' ? [{name: 'email'}] : properties[ruleForm.productId])"
+                        :key="prop.name"
+                        :label="prop.name"
+                        :value="prop.name">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="4">
+                <el-form-item>
+                  <el-input v-model="param.value" placeholder="值"></el-input>
+                </el-form-item>
+              </el-col>
+<!--              <el-col :span="4" :offset="2">-->
+<!--                <el-button type="text" @click="deleteParam(actIdx, pIdx)">删除</el-button>-->
+<!--              </el-col>-->
+            </el-row>
+<!--            <el-row style="margin-left: 10px">-->
+<!--              <el-button type="text" @click="addParam(actIdx)">添加</el-button>-->
+<!--            </el-row>-->
+          </div>
+
         </div>
         <el-row style="margin-left: 10px">
           <el-button type="text" icon="el-icon-plus" @click="addAction">新增执行动作</el-button>
@@ -263,7 +298,16 @@ export default {
         .then((data) => {
           if (data) {
             this.products = data;
-            // TODO properties
+            for (let i = 0; i < this.products.length; i++) {
+              let productId = this.products[i].productId;
+              this.properties[productId] = this.products[i].modelPro;
+              this.serves[productId] = this.products[i].modelServe;
+              this.serveParam[productId] = {};
+              for (let j = 0; j < this.products[i].modelServe.length; j++) {
+                this.serveParam[productId][this.products[i].modelServe[j].identifier]
+                    = this.products[i].modelServe[j].params
+              }
+            }
           }
         }).catch(() => {});
 
@@ -296,6 +340,9 @@ export default {
               else if (key === 'deviceId') {
                 action['deviceId'] = data.actions[i].params['deviceId'];
               }
+              else if (key === 'method') {
+                action['method'] = data.actions[i].params['method'];
+              }
               else action['params'].push({'property': key, 'value': data.actions[i].params[key]});
             }
             actions_.push(action);
@@ -315,10 +362,21 @@ export default {
         1: [{deviceId: 1, deviceName: '水温计'}, {deviceId: 2, deviceName: '体温仪'}]
       },
       properties: {
-        1: [{name: 'temperature'}, {name: 'power'}]
+        1: [{identifier: 'temperature', name: '温度'}, {identifier: 'power', name: '电量'}]
       },
+      serves: {
+        1: [{identifier: 'control', name: '控制',
+              params: [{identifier: 'temperature', name: '温度'}, {identifier: 'power', name: '电量'}]}]
+      },
+      serveParam: {
+        1 : {
+          'control': [{identifier: 'temperature', name: '温度'}, {identifier: 'power', name: '电量'}]
+        }
+      },
+
       operators: ['==', '!=', '>', '<', '>=', '<='],
       actions: [{name: 'mailAction', label: '邮件通知'}, {name: 'ctrlAction', label: '控制设备'}],
+
       /** form */
       ruleForm: {
         name: '',
@@ -384,7 +442,7 @@ export default {
     },
 
     addAction() {
-      this.ruleForm.actions.push({name: 'mailAction', params: []});
+      this.ruleForm.actions.push({name: '', params: []});
     },
     deleteAction(actIdx) {
       this.ruleForm.actions.splice(actIdx, 1);
@@ -396,7 +454,16 @@ export default {
       this.ruleForm.actions[actIdx].params.splice(pIdx, 1);
     },
 
+    changeProduct(productId) {
+      Api.get('/device-service//device/getDeviceByProduct', {productId: productId})
+          .then((data) => {
+            if (data) {
+              this.devices[productId] = data;
+            }
+          }).catch(() => {});
+    },
     changeAction(actionName, actIdx) {
+      this.ruleForm.actions[actIdx].params = [];
       if (actionName === 'ctrlAction') {
         // 默认控制本设备
         if (this.ruleForm.productId)
@@ -406,15 +473,16 @@ export default {
       } else {
         this.ruleForm.actions[actIdx].productId = null;
         this.ruleForm.actions[actIdx].deviceId = null;
+        this.ruleForm.actions[actIdx].params.push({property: 'email', value: ''});
       }
     },
-    changeProduct(productId) {
-      Api.get('/device-service//device/getDeviceByProduct', {productId: productId})
-          .then((data) => {
-            if (data) {
-              this.devices[productId] = data;
-            }
-          }).catch(() => {});
+    changeServe(serveIdentifier, actIdx) {
+      this.ruleForm.actions[actIdx].params = [];
+      let productId = this.ruleForm.actions[actIdx].productId;
+      for (let i = 0; i < this.serveParam[productId][serveIdentifier].length; i++) {
+        let p = this.serveParam[productId][serveIdentifier][i].identifier;
+        this.ruleForm.actions[actIdx].params.push({property: p, value: ''});
+      }
     },
 
     reset(formName) {
@@ -447,6 +515,9 @@ export default {
             }
             if (this.ruleForm.actions[i].deviceId) {
               paramMap['deviceId'] = Number(this.ruleForm.actions[i].deviceId);
+            }
+            if (this.ruleForm.actions[i].method) {
+              paramMap['method'] = this.ruleForm.actions[i].method;
             }
             this.ruleForm.actions[i].params.forEach(param => {
               if (!isNaN(param.value)) param.value = Number(param.value);

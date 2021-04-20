@@ -11,7 +11,7 @@
         <el-row style="padding-top: 15px">
           <el-col :span="6">
             <el-form-item prop="productId" label="产品">
-              <el-select v-model="factForm.productId" :value="factForm.productId">
+              <el-select v-model="factForm.productId" :value="factForm.productId" @change="changeProduct($event)">
                 <el-option
                     v-for="p in products"
                     :key="p.productId"
@@ -83,13 +83,17 @@ import Api from '../assets/js/api';
 export default {
   name: 'Simulator',
   mounted() {
-    // Api.get('/get_categories', {restaurant: sessionStorage.getItem('id')}).then((data) => {
-    //   if (data) {
-    //     this.products = [];
-    //   }
-    // }).catch(() => {
-    // });
-    console.log(sessionStorage.getItem('projectId'));
+    Api.get('/device-service/product/getAll',
+        {projectId: Number(sessionStorage.getItem('projectId'))})
+        .then((data) => {
+          if (data) {
+            this.products = data;
+            for (let i = 0; i < this.products.length; i++) {
+              let productId = this.products[i].productId;
+              this.properties[productId] = this.products[i].modelPro;
+            }
+          }
+        }).catch(() => {});
   },
   data() {
     return {
@@ -116,6 +120,15 @@ export default {
     },
     deleteParam(pIdx) {
       this.factForm.params.splice(pIdx, 1);
+    },
+
+    changeProduct(productId) {
+      Api.get('/device-service//device/getDeviceByProduct', {productId: productId})
+          .then((data) => {
+            if (data) {
+              this.devices[productId] = data;
+            }
+          }).catch(() => {});
     },
 
     reset(formName) {
