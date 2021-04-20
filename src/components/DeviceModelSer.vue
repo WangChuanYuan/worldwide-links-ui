@@ -132,7 +132,7 @@ export default {
   },
   methods: {
     addPro() {
-      this.modelForm.params.push({identifier: '', name: ''});
+      this.modelForm.params.push({identifier: '', name: '',});
     },
     deletePro(proIdx) {
       this.modelForm.params.splice(proIdx, 1);
