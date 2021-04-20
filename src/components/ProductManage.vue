@@ -5,7 +5,7 @@
       <hr/>
       <el-breadcrumb separator-class="el-icon-arrow-right" style="padding: 10px 0 10px 30px">
         <el-breadcrumb-item :to="{path: '/dashboard/device_manage'}">设备管理</el-breadcrumb-item>
-        <el-breadcrumb-item>产品</el-breadcrumb-item>
+        <el-breadcrumb-item>产品列表</el-breadcrumb-item>
       </el-breadcrumb>
 
       <el-table :data="products">

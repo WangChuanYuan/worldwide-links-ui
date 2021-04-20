@@ -120,40 +120,39 @@ export default {
     }
   },
   mounted() {
-
-    console.log(sessionStorage.getItem('projectId'));
-    if (this.aim === 'modify') {
-      let url = '/rule-service/' + sessionStorage.getItem('projectId') + '/rules/' + this.rid;
-      let _this = this;
-      Api.get(url).then((data) => {
-        if (data) {
-          _this.modelForm.name = data.name;
-          _this.modelForm.description = data.description;
-          _this.modelForm.productId = data.productId;
-          _this.modelForm.deviceId = data.deviceId;
-
-          let dates = [];
-          dates[0] = data.begin;
-          dates[1] = data.end;
-          _this.modelForm.dates = dates;
-          _this.modelForm.accessMode = data.accessMode;
-
-          _this.modelForm.triggers = data.triggers;
-          let actions_ = [];
-          for (let i = 0; i < data.actions.length; i++) {
-            let action = {};
-            action['name'] = data.actions[i].name;
-            action['params'] = [];
-            for (let key in data.actions[i].params) {
-              action['params'].push({'property': key, 'value': data.actions[i].params[key]});
-            }
-            actions_.push(action);
-          }
-          _this.modelForm.actions = actions_;
-        }
-      }).catch(() => {
-      });
-    }
+    // console.log(sessionStorage.getItem('projectId'));
+    // if (this.aim === 'modify') {
+    //   let url = '/rule-service/' + sessionStorage.getItem('projectId') + '/rules/' + this.rid;
+    //   let _this = this;
+    //   Api.get(url).then((data) => {
+    //     if (data) {
+    //       _this.modelForm.name = data.name;
+    //       _this.modelForm.description = data.description;
+    //       _this.modelForm.productId = data.productId;
+    //       _this.modelForm.deviceId = data.deviceId;
+    //
+    //       let dates = [];
+    //       dates[0] = data.begin;
+    //       dates[1] = data.end;
+    //       _this.modelForm.dates = dates;
+    //       _this.modelForm.accessMode = data.accessMode;
+    //
+    //       _this.modelForm.triggers = data.triggers;
+    //       let actions_ = [];
+    //       for (let i = 0; i < data.actions.length; i++) {
+    //         let action = {};
+    //         action['name'] = data.actions[i].name;
+    //         action['params'] = [];
+    //         for (let key in data.actions[i].params) {
+    //           action['params'].push({'property': key, 'value': data.actions[i].params[key]});
+    //         }
+    //         actions_.push(action);
+    //       }
+    //       _this.modelForm.actions = actions_;
+    //     }
+    //   }).catch(() => {
+    //   });
+    // }
   },
   data() {
     return {
@@ -166,11 +165,6 @@ export default {
       accessMode: [
         {id: 1, name: '只读'},{id: 2, name: '只写'},{id: 3, name: '允许读写'}
       ],
-      properties: {
-        1: [{name: 'temperature'}]
-      },
-      operators: ['==', '!=', '>', '<', '>=', '<='],
-      actions: [{name: 'mailAction', label: '邮件通知'}, {name: 'cmdAction', label: '控制设备'}],
       /** form */
       modelForm: {
         modelType:'',
@@ -190,42 +184,21 @@ export default {
         name: [
           {
             required: true,
-            message: '请输入规则名称',
+            message: '请输入属性名称',
             trigger: 'blur'
           }
         ],
         identifier: [
           {
             required: true,
-            message: '请输入标识符名称',
+            message: '请输入属性标识',
             trigger: 'blur'
           }
         ],
         description: [
           {
             required: false,
-            message: '请输入规则描述',
-            trigger: 'blur'
-          }
-        ],
-        dates: [
-          {
-            required:false,
-            message: '请选择生效时间',
-            trigger: 'blur'
-          }
-        ],
-        productId: [
-          {
-            required: true,
-            message: '请选择产品',
-            trigger: 'blur'
-          }
-        ],
-        deviceId: [
-          {
-            required: false,
-            message: '请选择设备',
+            message: '请输入属性描述',
             trigger: 'blur'
           }
         ]
@@ -289,7 +262,7 @@ export default {
           model['dataType'] = this.modelForm.dataType;
           model['accessMode'] = this.modelForm.accessMode;
 
-          let url = '/device-service/' + this.modelForm.modelType + '/create';
+          let url = '/device-service/modelPro/create';
           if (this.aim === 'modify') {
             model['id'] =  this.rid;
             Api.put(url, model).then((data) => {

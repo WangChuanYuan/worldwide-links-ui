@@ -141,16 +141,20 @@
     <el-dialog title="物模型属性" :visible.sync="modelProVisible">
       <DeviceModelPro :model-pro="modelPro2Edit" @close="modelProVisible=false"></DeviceModelPro>
     </el-dialog>
+    <el-dialog title="物模型服务" :visible.sync="modelServeVisible">
+      <DeviceModelSer :model-pro="modelServe2Edit" @close="modelServeVisible=false"></DeviceModelSer>
+    </el-dialog>
   </el-container>
 </template>
 
 <script>
 import Api from '../assets/js/api';
 import DeviceModelPro from "@/components/DeviceModePro";
+import DeviceModelSer from "@/components/DeviceModelSer";
 
 export default {
   name: 'DeviceCreate',
-  components: {DeviceModelPro},
+  components: {DeviceModelPro,DeviceModelSer},
   props: {
     'rid': {
       type: Number,
@@ -278,16 +282,11 @@ export default {
   methods: {
     addModelPro() {
       let tmp = {
-        modelType:'',
+        modelType:'modelPro',
         identifier:'',
         name: '',
         description: '',
-        dates: [],
         dataType: null,
-        deviceId: null,
-        triggers: [],
-        actions: [],
-        enabled: true,
         accessMode:'',
       }
       this.deviceForm.modelPro.push(tmp);
@@ -304,8 +303,7 @@ export default {
         dates: [],
         dataType: null,
         deviceId: null,
-        triggers: [],
-        actions: [],
+        params:[],
         enabled: true,
         accessMode:'',
       }

@@ -101,19 +101,22 @@
           </el-col>
         </el-row>
         <div style="background-color: var(--theme-grey); margin-top: 10px"
-             v-for="(modelServe, modelServeIdx) in productForm.modelServe" :key="modelServeIdx">
+             v-for="(modelServe, modelServeIdx) in productForm.modelServe" :key="'serve'+modelServeIdx">
           <el-row :gutter="5" style="margin-left: 8px; padding-top: 10px">
-            <el-col :span="4">
-              <el-select v-model="modelServe.name" :value="modelServe.name">
-                <el-option
-                    v-for="modelServe in modelServes"
-                    :key="modelServe.id"
-                    :label="modelServe.name"
-                    :value="modelServe.name">
-                </el-option>
-              </el-select>
+            <el-col :span="12">
+              <el-form :inline="true" label-position="left">
+                <el-form-item label="名称" >
+                  <el-input disabled v-model="modelServe.name"></el-input>
+                </el-form-item>
+                <el-form-item label="标识">
+                  <el-input disabled v-model="modelServe.identifier"></el-input>
+                </el-form-item>
+              </el-form>
             </el-col>
-            <el-col :span="4">
+            <el-col :span="1">
+              <el-button type="text" @click="modifyModelServe(modelServe)">修改</el-button>
+            </el-col>
+            <el-col :span="1">
               <el-button type="text" @click="deleteModelServe(modelServeIdx)">删除</el-button>
             </el-col>
           </el-row>
@@ -121,8 +124,6 @@
         <el-row style="margin-left: 10px">
           <el-button type="text" icon="el-icon-plus" @click="addModelServe">新增物模型服务</el-button>
         </el-row>
-
-
 
         <el-row>
           <el-col :span="4">
@@ -148,16 +149,20 @@
     <el-dialog title="物模型属性" :visible.sync="proEditorVisible">
       <DeviceModelPro @save="saveModelPro" @close="proEditorVisible=false" ref="modelProEditor"></DeviceModelPro>
     </el-dialog>
+    <el-dialog title="物模型服务" :visible.sync="serveEditorVisible">
+      <DeviceModelSer @save="saveModelServe" @close="serveEditorVisible=false" ref="modelServeEditor"></DeviceModelSer>
+    </el-dialog>
   </el-container>
 </template>
 
 <script>
 import Api from '../assets/js/api';
 import DeviceModelPro from "@/components/DeviceModePro";
+import DeviceModelSer from "@/components/DeviceModelSer";
 
 export default {
   name: 'ProductCreate',
-  components: {DeviceModelPro},
+  components: {DeviceModelPro,DeviceModelSer},
   props: {
     'rid': {
       type: Number,
@@ -220,8 +225,7 @@ export default {
 
       modelProsStore:[],
 
-      modelServeVisible: false,
-      modelServe2Edit: {},
+      serveEditorVisible: false,
 
       modelServesStore:[],
 
@@ -232,11 +236,8 @@ export default {
       productForm: {
         name: '',
         description: '',
-        dates: [],
         modelPro: [],
         modelServe: [],
-        triggers: [],
-        actions: [],
         enabled: true
       },
       ruleRules: {
@@ -281,20 +282,18 @@ export default {
   methods: {
     addModelPro() {
       let tmp = {
-        modelType:'',
+        modelType:'modelPro',
         identifier:'',
         name: '',
         description: '',
-        dates: [],
         dataType: null,
-        deviceId: null,
-        triggers: [],
-        actions: [],
         enabled: true,
         accessMode:'',
-      }
+      };
       this.proEditorVisible = true;
-      this.$refs.modelProEditor.modelForm = tmp;
+      this.$nextTick(() => {
+        this.$refs.modelProEditor.modelForm = tmp;
+      });
     },
     modifyModelPro (pro) {
       this.proEditorVisible = true;
@@ -314,24 +313,29 @@ export default {
         identifier:'',
         name: '',
         description: '',
-        dates: [],
         dataType: null,
-        deviceId: null,
-        triggers: [],
-        actions: [],
+        params:[],
         enabled: true,
         accessMode:'',
       }
-      this.productForm.modelServe.push(tmp);
-      this.modelServeVisible = true;
-      this.modelServeEdit = tmp;
+      this.serveEditorVisible = true;
+      this.$nextTick(() => {
+        this.$refs.modelServeEditor.modelForm = tmp;
+        this.$refs.modelServeEditor.modelPros = this.productForm.modelPro;
+      });
     },
-
+    modifyModelServe(serve) {
+      this.serveEditorVisible = true;
+      this.$refs.modelServeEdit.aim = 'modify';
+      this.$refs.modelServeEdit.modelForm = serve;
+      this.$refs.modelServeEditor.modelPros = this.productForm.modelPro;
+    },
     deleteModelServe(serveIdx) {
       this.productForm.modelServe.splice(serveIdx, 1);
     },
-
-
+    saveModelServe (serve) {
+      this.productForm.modelServe.push(serve);
+    },
 
     reset(formName) {
       this.$refs[formName].resetFields();
