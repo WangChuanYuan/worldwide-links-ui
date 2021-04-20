@@ -4,7 +4,7 @@
       <h3>产品创建</h3>
       <hr/>
       <el-breadcrumb separator-class="el-icon-arrow-right" style="padding: 10px 0 10px 30px">
-        <el-breadcrumb-item :to="{path: '/dashboard/device_manange'}">设备管理</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{path: '/dashboard/device_manage'}">设备管理</el-breadcrumb-item>
         <el-breadcrumb-item>产品创建</el-breadcrumb-item>
       </el-breadcrumb>
       <el-form :model="productForm" :rules="ruleRules" ref="deviceForm" style="padding-left: 2%">
@@ -68,18 +68,21 @@
         <div style="background-color: var(--theme-grey); margin-top: 10px"
              v-for="(modelPro, modelProIdx) in productForm.modelPro" :key="modelProIdx">
           <el-row :gutter="5" style="margin-left: 8px; padding-top: 10px">
-            <el-col :span="4">
-              <el-select v-model="modelPro.name" :value="modelPro.name">
-                <el-option
-                    v-for="modelPro in modelPros"
-                    :key="modelPro.id"
-                    :label="modelPro.name"
-                    :value="modelPro.name">
-                </el-option>
-              </el-select>
+            <el-col :span="12">
+              <el-form :inline="true" label-position="left">
+                <el-form-item label="名称" >
+                  <el-input disabled v-model="modelPro.name"></el-input>
+                </el-form-item>
+                <el-form-item label="标识">
+                  <el-input disabled v-model="modelPro.identifier"></el-input>
+                </el-form-item>
+              </el-form>
             </el-col>
-            <el-col :span="4">
-              <el-button type="text" @click="deleteModelPro(actIdx)">删除</el-button>
+            <el-col :span="1">
+              <el-button type="text" @click="modifyModelPro(modelPro)">修改</el-button>
+            </el-col>
+            <el-col :span="1">
+              <el-button type="text" @click="deleteModelPro(modelProIdx)">删除</el-button>
             </el-col>
           </el-row>
         </div>
@@ -111,7 +114,7 @@
               </el-select>
             </el-col>
             <el-col :span="4">
-              <el-button type="text" @click="deleteModelServe(actIdx)">删除</el-button>
+              <el-button type="text" @click="deleteModelServe(modelServeIdx)">删除</el-button>
             </el-col>
           </el-row>
         </div>
@@ -142,8 +145,8 @@
         </el-row>
       </el-form>
     </el-main>
-    <el-dialog title="物模型属性" :visible.sync="modelProVisible">
-      <DeviceModelPro :model-pro="modelPro2Edit" @close="modelProVisible=false"></DeviceModelPro>
+    <el-dialog title="物模型属性" :visible.sync="proEditorVisible">
+      <DeviceModelPro @save="saveModelPro" @close="proEditorVisible=false" ref="modelProEditor"></DeviceModelPro>
     </el-dialog>
   </el-container>
 </template>
@@ -213,8 +216,7 @@ export default {
   },
   data() {
     return {
-      modelProVisible: false,
-      modelPro2Edit: {},
+      proEditorVisible: false,
 
       modelProsStore:[],
 
@@ -291,9 +293,19 @@ export default {
         enabled: true,
         accessMode:'',
       }
-      this.productForm.modelPro.push(tmp);
-      this.modelProVisible = true;
-      this.modelPro2Edit = tmp;
+      this.proEditorVisible = true;
+      this.$refs.modelProEditor.modelForm = tmp;
+    },
+    modifyModelPro (pro) {
+      this.proEditorVisible = true;
+      this.$refs.modelProEditor.aim = 'modify';
+      this.$refs.modelProEditor.modelForm = pro;
+    },
+    saveModelPro (pro) {
+      this.productForm.modelPro.push(pro);
+    },
+    deleteModelPro(proIdx) {
+      this.productForm.modelPro.splice(proIdx, 1);
     },
 
     addModelServe() {
@@ -313,9 +325,6 @@ export default {
       this.productForm.modelServe.push(tmp);
       this.modelServeVisible = true;
       this.modelServeEdit = tmp;
-    },
-    deleteModelPro(proIdx) {
-      this.productForm.modelPro.splice(proIdx, 1);
     },
 
     deleteModelServe(serveIdx) {

@@ -1,12 +1,12 @@
 <template>
   <el-container>
     <el-main style="padding-top: 0">
-      <h3>物模型创建</h3>
-      <hr/>
-      <el-breadcrumb separator-class="el-icon-arrow-right" style="padding: 10px 0 10px 30px">
-        <el-breadcrumb-item :to="{path: '/dashboard/device_manage'}">设备管理</el-breadcrumb-item>
-        <el-breadcrumb-item>物模型创建</el-breadcrumb-item>
-      </el-breadcrumb>
+<!--      <h3>物模型创建</h3>-->
+<!--      <hr/>-->
+<!--      <el-breadcrumb separator-class="el-icon-arrow-right" style="padding: 10px 0 10px 30px">-->
+<!--        <el-breadcrumb-item :to="{path: '/dashboard/device_manage'}">设备管理</el-breadcrumb-item>-->
+<!--        <el-breadcrumb-item>物模型创建</el-breadcrumb-item>-->
+<!--      </el-breadcrumb>-->
       <el-form :model="modelForm" :rules="ruleRules" ref="modelForm" style="padding-left: 2%">
 
         <!--名称 描述-->
@@ -28,33 +28,33 @@
           </el-col>
         </el-row>
 
-        <el-row>
-          <el-col :span="2">
-            <b>数据类型</b>
-          </el-col>
-          <el-col :span="2">
-            <el-tooltip content="暂无" placement="right">
-              <i class="el-icon-question"></i>
-            </el-tooltip>
-          </el-col>
-        </el-row>
+<!--        <el-row>-->
+<!--          <el-col :span="2">-->
+<!--            <b>数据类型</b>-->
+<!--          </el-col>-->
+<!--          <el-col :span="2">-->
+<!--            <el-tooltip content="暂无" placement="right">-->
+<!--              <i class="el-icon-question"></i>-->
+<!--            </el-tooltip>-->
+<!--          </el-col>-->
+<!--        </el-row>-->
 
         <!--类型 读写-->
-        <el-row style="padding-top: 15px">
+        <el-row :gutter="5" style="padding-top: 15px">
+<!--          <el-col :span="6">-->
+<!--            <el-form-item prop="modelType" label="物模型类型">-->
+<!--              <el-select v-model="modelForm.modelType" :value="modelForm.modelType">-->
+<!--                <el-option-->
+<!--                    v-for="p in modelType"-->
+<!--                    :key="p.id"-->
+<!--                    :label="p.name"-->
+<!--                    :value="p.name">-->
+<!--                </el-option>-->
+<!--              </el-select>-->
+<!--            </el-form-item>-->
+<!--          </el-col>-->
           <el-col :span="6">
-            <el-form-item prop="modelType" label="物模型类型">
-              <el-select v-model="modelForm.modelType" :value="modelForm.modelType">
-                <el-option
-                    v-for="p in modelType"
-                    :key="p.id"
-                    :label="p.name"
-                    :value="p.name">
-                </el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item  v-if="modelForm.modelType" prop="dataType" label="数据类型">
+            <el-form-item label="数据类型">
               <el-select v-model="modelForm.dataType" :value="modelForm.dataType">
                 <el-option
                     v-for="p in dateType"
@@ -66,7 +66,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item v-if="modelForm.dataType" prop="deviceId" label="读写权限">
+            <el-form-item label="读写权限">
               <el-select v-model="modelForm.accessMode" :value="modelForm.accessMode">
                 <el-option
                     v-for="d in accessMode"
@@ -79,19 +79,17 @@
           </el-col>
         </el-row>
 
-
-
-        <el-row>
-          <el-col :span="4">
-            <b>是否启动</b>
-            <el-switch
-                v-model="modelForm.enabled"
-                active-color="#13ce66"
-                inactive-color="#ff4949"
-                style="margin: 5px 10px">
-            </el-switch>
-          </el-col>
-        </el-row>
+<!--        <el-row>-->
+<!--          <el-col :span="4">-->
+<!--            <b>是否启动</b>-->
+<!--            <el-switch-->
+<!--                v-model="modelForm.enabled"-->
+<!--                active-color="#13ce66"-->
+<!--                inactive-color="#ff4949"-->
+<!--                style="margin: 5px 10px">-->
+<!--            </el-switch>-->
+<!--          </el-col>-->
+<!--        </el-row>-->
 
         <!--保存 重置-->
         <el-row>
@@ -119,10 +117,6 @@ export default {
       // add || modify
       type: String,
       default: 'add'
-    },
-    'modelPro': {
-      type: Object,
-      default: null
     }
   },
   mounted() {
@@ -178,20 +172,20 @@ export default {
       operators: ['==', '!=', '>', '<', '>=', '<='],
       actions: [{name: 'mailAction', label: '邮件通知'}, {name: 'cmdAction', label: '控制设备'}],
       /** form */
-      // modelForm: {
-      //   modelType:'',
-      //   identifier:'',
-      //   name: '',
-      //   description: '',
-      //   dates: [],
-      //   dataType: null,
-      //   deviceId: null,
-      //   triggers: [],
-      //   actions: [],
-      //   enabled: true,
-      //   accessMode:'',
-      // },
-      modelForm: this.modelPro,
+      modelForm: {
+        modelType:'',
+        identifier:'',
+        name: '',
+        description: '',
+        dates: [],
+        dataType: null,
+        deviceId: null,
+        triggers: [],
+        actions: [],
+        enabled: true,
+        accessMode:'',
+      },
+      // modelForm: this.modelPro,
       ruleRules: {
         name: [
           {
@@ -271,22 +265,21 @@ export default {
     submit(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-
-          for (let i = 0; i < this.modelForm.triggers.length; i++) {
-            this.modelForm.triggers[i].conditions.forEach(condition => {
-              if (!isNaN(condition.value)) condition.value = Number(condition.value);
-            });
-          }
-          let actions_ = []
-          for (let i = 0; i < this.modelForm.actions.length; i++) {
-            actions_.push({name: this.modelForm.actions[i].name, params: {}});
-            let paramMap = {}
-            this.modelForm.actions[i].params.forEach(param => {
-              if (!isNaN(param.value)) param.value = Number(param.value);
-              paramMap[param.property] = param.value;
-            });
-            actions_[i].params = paramMap
-          }
+          // for (let i = 0; i < this.modelForm.triggers.length; i++) {
+          //   this.modelForm.triggers[i].conditions.forEach(condition => {
+          //     if (!isNaN(condition.value)) condition.value = Number(condition.value);
+          //   });
+          // }
+          // let actions_ = []
+          // for (let i = 0; i < this.modelForm.actions.length; i++) {
+          //   actions_.push({name: this.modelForm.actions[i].name, params: {}});
+          //   let paramMap = {}
+          //   this.modelForm.actions[i].params.forEach(param => {
+          //     if (!isNaN(param.value)) param.value = Number(param.value);
+          //     paramMap[param.property] = param.value;
+          //   });
+          //   actions_[i].params = paramMap
+          // }
           let model = {};
           model['name'] = this.modelForm.name;
           model['description'] = this.modelForm.description;
@@ -295,20 +288,22 @@ export default {
           model['identifier'] = this.modelForm.identifier;
           model['dataType'] = this.modelForm.dataType;
           model['accessMode'] = this.modelForm.accessMode;
+
           let url = '/device-service/' + this.modelForm.modelType + '/create';
           if (this.aim === 'modify') {
             model['id'] =  this.rid;
             Api.put(url, model).then((data) => {
               if (data) {
-                this.$message.success("修改规则成功");
-                this.$router.push('/dashboard/rule_manage');
+                // this.$message.success("修改规则成功");
+                this.$emit('close');
               } else this.$message.warning("修改规则失败");
             }).catch(() => {
             });
           } else {
             Api.post(url, model).then((data) => {
               if (data) {
-                this.$message.success("新建物模型成功");
+                // this.$message.success("新建物模型成功");
+                this.$emit("save", model);
                 this.$emit('close');
                 // this.$router.push('/dashboard/product_manage');
               } else this.$message.warning("新建物模型失败");
