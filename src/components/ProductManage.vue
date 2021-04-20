@@ -71,7 +71,7 @@ export default {
     };
   },
   mounted() {
-    let url = '/device-service/product/getProductByProductId/'+sessionStorage.getItem("projectId")
+    let url = '/device-service/product/getProductByProjectId/'+sessionStorage.getItem("projectId")
     Api.get(url).then((data) => {
       if (data) this.products = data;
     }).catch(() => {
