@@ -203,17 +203,7 @@ export default {
           _this.deviceForm.enabled = data.enabled;
 
           _this.deviceForm.triggers = data.triggers;
-          let actions_ = [];
-          for (let i = 0; i < data.actions.length; i++) {
-            let action = {};
-            action['name'] = data.actions[i].name;
-            action['params'] = [];
-            for (let key in data.actions[i].params) {
-              action['params'].push({'property': key, 'value': data.actions[i].params[key]});
-            }
-            actions_.push(action);
-          }
-          _this.deviceForm.actions = actions_;
+
         }
       }).catch(() => {
       });
@@ -343,27 +333,12 @@ export default {
     submit(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-
-          for (let i = 0; i < this.productForm.triggers.length; i++) {
-            this.productForm.triggers[i].conditions.forEach(condition => {
-              if (!isNaN(condition.value)) condition.value = Number(condition.value);
-            });
-          }
-          let actions_ = []
-          for (let i = 0; i < this.productForm.actions.length; i++) {
-            actions_.push({name: this.productForm.actions[i].name, params: {}});
-            let paramMap = {}
-            this.productForm.actions[i].params.forEach(param => {
-              if (!isNaN(param.value)) param.value = Number(param.value);
-              paramMap[param.property] = param.value;
-            });
-            actions_[i].params = paramMap
-          }
           let product = {};
           product['productName'] = this.productForm.name;
           product['description'] = this.productForm.description;
           product['enabled'] = this.productForm.enabled;
           product['projectId'] = sessionStorage.getItem("projectId");
+          console.log(this.productForm.enabled)
           let url = '/device-service/product/create';
           if (this.aim === 'modify') {
             product['productId'] =  this.rid;

@@ -86,57 +86,11 @@ export default {
     }
   },
   mounted() {
-    // let url = '/device-service/modelPro/getAll'
-    // Api.get(url).then((data) => {
-    //   if (data) this.properties = data;
-    // }).catch(() => {
-    // });
-    //
-    // console.log(sessionStorage.getItem('projectId'));
-    // if (this.aim === 'modify') {
-    //   let url = '/rule-service/' + sessionStorage.getItem('projectId') + '/rules/' + this.rid;
-    //   let _this = this;
-    //   Api.get(url).then((data) => {
-    //     if (data) {
-    //       _this.modelForm.name = data.name;
-    //       _this.modelForm.description = data.description;
-    //       _this.modelForm.productId = data.productId;
-    //       _this.modelForm.deviceId = data.deviceId;
-    //
-    //       let dates = [];
-    //       dates[0] = data.begin;
-    //       dates[1] = data.end;
-    //       _this.modelForm.dates = dates;
-    //       _this.modelForm.accessMode = data.accessMode;
-    //
-    //       _this.modelForm.triggers = data.triggers;
-    //       let actions_ = [];
-    //       for (let i = 0; i < data.actions.length; i++) {
-    //         let action = {};
-    //         action['name'] = data.actions[i].name;
-    //         action['params'] = [];
-    //         for (let key in data.actions[i].params) {
-    //           action['params'].push({'property': key, 'value': data.actions[i].params[key]});
-    //         }
-    //         actions_.push(action);
-    //       }
-    //       _this.modelForm.actions = actions_;
-    //     }
-    //   }).catch(() => {
-    //   });
-    // }
+
   },
   data() {
     return {
-      // modelType: [
-      //   {id: 1, name: 'modelPro'}, {id: 2, name: 'modelServe'},{id: 3, name: 'modelEvent'}
-      // ],
-      // dateType: [
-      //   {id: 1, name: 'int'}, {id: 2, name: 'double'}, {id: 3, name: 'string'}, {id: 4, name: 'Long'}
-      // ],
-      // accessMode: [
-      //   {id: 1, name: '只读'},{id: 2, name: '只写'},{id: 3, name: '允许读写'}
-      // ],
+
       modelPros: [],
 
       /** form */
