@@ -14,9 +14,9 @@
               <el-select v-model="factForm.productId" :value="factForm.productId">
                 <el-option
                     v-for="p in products"
-                    :key="p.id"
-                    :label="p.name"
-                    :value="p.id">
+                    :key="p.productId"
+                    :label="p.productName"
+                    :value="p.productId">
                 </el-option>
               </el-select>
             </el-form-item>
@@ -26,9 +26,9 @@
               <el-select v-model="factForm.deviceId" :value="factForm.deviceId">
                 <el-option
                     v-for="d in devices[factForm.productId]"
-                    :key="d.id"
-                    :label="d.name"
-                    :value="d.id">
+                    :key="d.deviceId"
+                    :label="d.deviceName"
+                    :value="d.deviceId">
                 </el-option>
               </el-select>
             </el-form-item>
@@ -94,13 +94,13 @@ export default {
   data() {
     return {
       products: [
-        {id: 1, name: '温度传感器'}
+        {productId: 1, productName: '温度传感器'}
       ],
       devices: {
-        1: [{id: 1, name: '水温计'}]
+        1: [{deviceId: 1, deviceName: '水温计'}, {deviceId: 2, deviceName: '体温仪'}]
       },
       properties: {
-        1: [{name: 'temperature'}]
+        1: [{name: 'temperature'}, {name: 'power'}]
       },
       /** form */
       factForm: {

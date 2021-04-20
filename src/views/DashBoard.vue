@@ -11,10 +11,16 @@
         <el-menu-item style="margin: 30px 25px 30px 25px">
           <span class="logo">WordWide Links</span>
         </el-menu-item>
-        <el-menu-item index="device-manage">
-          <i class="el-icon-setting"></i>
-          <span>设备管理</span>
-        </el-menu-item>
+        <el-submenu index="device">
+          <template slot="title">
+            <i class="el-icon-setting"></i>
+             <span>设备管理</span>
+          </template>
+          <el-menu-item index="device-manage">设备列表</el-menu-item>
+          <el-menu-item index="device-create">设备创建</el-menu-item>
+          <el-menu-item index="product-manage">产品列表</el-menu-item>
+          <el-menu-item index="product-create">产品创建</el-menu-item>
+        </el-submenu>
         <el-submenu index="rule">
           <template slot="title">
             <i class="el-icon-place"></i>
@@ -44,8 +50,8 @@
           <el-menu-item>
             <i>{{projectName}}</i>
           </el-menu-item>
-          <el-submenu index="member" v-if="id" style="float: right">
-            <template slot="title">{{ id }}</template>
+          <el-submenu index="member" v-if="userId" style="float: right">
+            <template slot="title">{{ userId }}</template>
             <el-menu-item index="member-logout">
               <i class="el-icon-remove-outline"></i>
               登出
@@ -71,7 +77,7 @@ export default {
   name: 'DashBoard',
   data() {
     return {
-      userid: sessionStorage.getItem('id'),
+      userId: sessionStorage.getItem('userId'),
       projectName: sessionStorage.getItem('projectName'),
       isCollapsed: false
     }
@@ -84,7 +90,25 @@ export default {
     navigation(key) {
       switch (key) {
         case 'device-manage':
-          this.$router.push('/');
+          this.$router.push('/dashboard/device_manage');
+          break;
+        case 'product-manage':
+          this.$router.push('/dashboard/product_manage');
+          break;
+        case 'product-create':
+          this.$router.push('/dashboard/product_create');
+          break;
+        case 'device-create':
+          this.$router.push('/dashboard/device_create');
+          break;
+        case 'device-modelPro':
+          this.$router.push('/dashboard/device_modelPro');
+          break;
+        case 'device-modelSer':
+          this.$router.push('/dashboard/device_modelSer');
+          break;
+        case 'device-modelEve':
+          this.$router.push('/dashboard/device_modelEve');
           break;
         case 'rule-manage':
           this.$router.push('/dashboard/rule_manage');
