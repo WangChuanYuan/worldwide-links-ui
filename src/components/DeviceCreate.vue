@@ -9,6 +9,7 @@
       </el-breadcrumb>
       <el-form :model="deviceForm" :rules="ruleRules" ref="deviceForm" style="padding-left: 2%">
 
+
         <!--名称 描述-->
         <el-row :gutter="10">
           <el-col :span="4">
@@ -32,45 +33,101 @@
             </el-form-item>
           </el-col>
         </el-row>
-        
+
+
         <el-row>
           <el-col :span="2">
-            <b>物模型</b>
+            <b>物模型属性</b>
           </el-col>
           <el-col :span="2">
-            <el-tooltip content="物模型选择" placement="right">
+            <el-tooltip content="物模型属性" placement="right">
               <i class="el-icon-question"></i>
             </el-tooltip>
           </el-col>
         </el-row>
+        <div style="background-color: var(--theme-grey); margin-top: 10px"
+             v-for="(modelPro, modelProIdx) in deviceForm.modelPro" :key="modelProIdx">
+          <el-row :gutter="5" style="margin-left: 8px; padding-top: 10px">
+            <el-col :span="4">
+              <el-select v-model="modelPro.name" :value="modelPro.name">
+                <el-option
+                    v-for="modelPro in modelPros"
+                    :key="modelPro.id"
+                    :label="modelPro.name"
+                    :value="modelPro.name">
+                </el-option>
+              </el-select>
+            </el-col>
+            <el-col :span="4">
+              <el-button type="text" @click="deleteModelPro(actIdx)">删除</el-button>
+            </el-col>
+          </el-row>
+        </div>
+        <el-row style="margin-left: 10px">
+          <el-button type="text" icon="el-icon-plus" @click="addModelPro">新增物模型属性</el-button>
+        </el-row>
 
-        <!--产品 设备-->
-        <el-row style="padding-top: 15px">
-          <el-col :span="6">
-            <el-form-item prop="modelProId" label="物模型-属性">
-              <el-select v-model="deviceForm.modelProId" :value="deviceForm.modelProId">
-                <el-option
-                    v-for="p in modelPros"
-                    :key="p.id"
-                    :label="p.name"
-                    :value="p.id">
-                </el-option>
-              </el-select>
-            </el-form-item>
+        <el-row>
+          <el-col :span="2">
+            <b>物模型服务</b>
           </el-col>
-          <el-col :span="6">
-            <el-form-item v-if="deviceForm.modelProId" prop="modelServeId" label="物模型-服务">
-              <el-select v-model="deviceForm.modelServeId" :value="deviceForm.modelServeId">
-                <el-option
-                    v-for="d in modelServes"
-                    :key="d.id"
-                    :label="d.name"
-                    :value="d.id">
-                </el-option>
-              </el-select>
-            </el-form-item>
+          <el-col :span="2">
+            <el-tooltip content="物模型服务" placement="right">
+              <i class="el-icon-question"></i>
+            </el-tooltip>
           </el-col>
         </el-row>
+        <div style="background-color: var(--theme-grey); margin-top: 10px"
+             v-for="(modelServe, modelServeIdx) in deviceForm.modelServe" :key="modelServeIdx">
+          <el-row :gutter="5" style="margin-left: 8px; padding-top: 10px">
+            <el-col :span="4">
+              <el-select v-model="modelServe.name" :value="modelServe.name">
+                <el-option
+                    v-for="modelServe in modelServes"
+                    :key="modelServe.id"
+                    :label="modelServe.name"
+                    :value="modelServe.name">
+                </el-option>
+              </el-select>
+            </el-col>
+            <el-col :span="4">
+              <el-button type="text" @click="deleteModelServe(actIdx)">删除</el-button>
+            </el-col>
+          </el-row>
+        </div>
+        <el-row style="margin-left: 10px">
+          <el-button type="text" icon="el-icon-plus" @click="addModelServe">新增物模型服务</el-button>
+        </el-row>
+
+
+        <!--        &lt;!&ndash;产品 设备&ndash;&gt;-->
+<!--        <el-row style="padding-top: 15px">-->
+<!--          <el-col :span="6">-->
+<!--            <el-form-item prop="modelProId" label="物模型-属性">-->
+<!--              <el-select v-model="deviceForm.modelProId" :value="deviceForm.modelProId">-->
+<!--                <el-option-->
+<!--                    v-for="p in modelPros"-->
+<!--                    :key="p.id"-->
+<!--                    :label="p.name"-->
+<!--                    :value="p.id">-->
+<!--                </el-option>-->
+<!--              </el-select>-->
+<!--            </el-form-item>-->
+<!--          </el-col>-->
+<!--          <el-col :span="6">-->
+<!--            <el-form-item v-if="deviceForm.modelProId" prop="modelServeId" label="物模型-服务">-->
+<!--              <el-select v-model="deviceForm.modelServeId" :value="deviceForm.modelServeId">-->
+<!--                <el-option-->
+<!--                    v-for="d in modelServes"-->
+<!--                    :key="d.id"-->
+<!--                    :label="d.name"-->
+<!--                    :value="d.id">-->
+<!--                </el-option>-->
+<!--              </el-select>-->
+<!--            </el-form-item>-->
+<!--          </el-col>-->
+<!--        </el-row>-->
+
 
         <!--保存 重置-->
         <el-row>
@@ -81,14 +138,19 @@
         </el-row>
       </el-form>
     </el-main>
+    <el-dialog title="物模型属性" :visible.sync="modelProVisible">
+      <DeviceModelPro :model-pro="modelPro2Edit" @close="modelProVisible=false"></DeviceModelPro>
+    </el-dialog>
   </el-container>
 </template>
 
 <script>
 import Api from '../assets/js/api';
+import DeviceModelPro from "@/components/DeviceModePro";
 
 export default {
   name: 'DeviceCreate',
+  components: {DeviceModelPro},
   props: {
     'rid': {
       type: Number,
@@ -147,13 +209,20 @@ export default {
   },
   data() {
     return {
+      modelProVisible: false,
+      modelPro2Edit: {},
+
+      modelProsStore:[],
+
+      modelServeVisible: false,
+      modelServe2Edit: {},
+
+      modelServesStore:[],
+
+
       modelPros: [],
       modelServes: [],
-      properties: {
-        1: [{name: 'temperature'}]
-      },
-      operators: ['==', '!=', '>', '<', '>=', '<='],
-      actions: [{name: 'mailAction', label: '邮件通知'}, {name: 'cmdAction', label: '控制设备'}],
+
       /** form */
       deviceForm: {
         name: '',
@@ -161,8 +230,8 @@ export default {
         industry:'',
         password:'',
         dates: [],
-        modelProId: null,
-        modelServeId: null,
+        modelPro: [],
+        modelServe: [],
         triggers: [],
         actions: [],
         enabled: true
@@ -207,31 +276,51 @@ export default {
     };
   },
   methods: {
-    addTrigger() {
-      this.deviceForm.triggers.push({conditions: []});
-    },
-    deleteTrigger(trigIdx) {
-      this.deviceForm.triggers.splice(trigIdx, 1);
-    },
-    addCondition(trigIdx) {
-      this.deviceForm.triggers[trigIdx].conditions.push({property: '', operator: '', value: ''});
-    },
-    deleteCondition(trigIdx, condIdx) {
-      this.deviceForm.triggers[trigIdx].conditions.splice(condIdx, 1);
+    addModelPro() {
+      let tmp = {
+        modelType:'',
+        identifier:'',
+        name: '',
+        description: '',
+        dates: [],
+        dataType: null,
+        deviceId: null,
+        triggers: [],
+        actions: [],
+        enabled: true,
+        accessMode:'',
+      }
+      this.deviceForm.modelPro.push(tmp);
+      this.modelProVisible = true;
+      this.modelPro2Edit = tmp;
     },
 
-    addAction() {
-      this.deviceForm.actions.push({name: 'mailAction', params: []});
+    addModelServe() {
+      let tmp = {
+        modelType:'',
+        identifier:'',
+        name: '',
+        description: '',
+        dates: [],
+        dataType: null,
+        deviceId: null,
+        triggers: [],
+        actions: [],
+        enabled: true,
+        accessMode:'',
+      }
+      this.deviceForm.modelServe.push(tmp);
+      this.modelServeVisible = true;
+      this.modelServeEdit = tmp;
     },
-    deleteAction(actIdx) {
-      this.deviceForm.actions.splice(actIdx, 1);
+    deleteModelPro(proIdx) {
+      this.deviceForm.modelPro.splice(proIdx, 1);
     },
-    addParam(actIdx) {
-      this.deviceForm.actions[actIdx].params.push({property: '', value: ''});
+
+    deleteModelServe(serveIdx) {
+      this.deviceForm.modelServe.splice(serveIdx, 1);
     },
-    deleteParam(actIdx, pIdx) {
-      this.deviceForm.actions[actIdx].params.splice(pIdx, 1);
-    },
+
 
     reset(formName) {
       this.$refs[formName].resetFields();

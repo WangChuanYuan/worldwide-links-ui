@@ -269,7 +269,6 @@ export default {
       this.$refs[formName].resetFields();
     },
     submit(formName) {
-      this.$emit('closeproeditor');
       this.$refs[formName].validate((valid) => {
         if (valid) {
 
@@ -310,8 +309,8 @@ export default {
             Api.post(url, model).then((data) => {
               if (data) {
                 this.$message.success("新建物模型成功");
+                this.$emit('close');
                 // this.$router.push('/dashboard/product_manage');
-
               } else this.$message.warning("新建物模型失败");
             }).catch(() => {
             });

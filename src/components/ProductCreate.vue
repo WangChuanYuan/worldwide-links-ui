@@ -79,12 +79,44 @@
               </el-select>
             </el-col>
             <el-col :span="4">
-              <el-button type="text" @click="deleteAction(actIdx)">删除</el-button>
+              <el-button type="text" @click="deleteModelPro(actIdx)">删除</el-button>
             </el-col>
           </el-row>
         </div>
         <el-row style="margin-left: 10px">
           <el-button type="text" icon="el-icon-plus" @click="addModelPro">新增物模型属性</el-button>
+        </el-row>
+
+        <el-row>
+          <el-col :span="2">
+            <b>物模型服务</b>
+          </el-col>
+          <el-col :span="2">
+            <el-tooltip content="物模型服务" placement="right">
+              <i class="el-icon-question"></i>
+            </el-tooltip>
+          </el-col>
+        </el-row>
+        <div style="background-color: var(--theme-grey); margin-top: 10px"
+             v-for="(modelServe, modelServeIdx) in productForm.modelServe" :key="modelServeIdx">
+          <el-row :gutter="5" style="margin-left: 8px; padding-top: 10px">
+            <el-col :span="4">
+              <el-select v-model="modelServe.name" :value="modelServe.name">
+                <el-option
+                    v-for="modelServe in modelServes"
+                    :key="modelServe.id"
+                    :label="modelServe.name"
+                    :value="modelServe.name">
+                </el-option>
+              </el-select>
+            </el-col>
+            <el-col :span="4">
+              <el-button type="text" @click="deleteModelServe(actIdx)">删除</el-button>
+            </el-col>
+          </el-row>
+        </div>
+        <el-row style="margin-left: 10px">
+          <el-button type="text" icon="el-icon-plus" @click="addModelServe">新增物模型服务</el-button>
         </el-row>
 
 
@@ -111,7 +143,7 @@
       </el-form>
     </el-main>
     <el-dialog title="物模型属性" :visible.sync="modelProVisible">
-      <DeviceModelPro :model-pro="modelPro2Edit"></DeviceModelPro>
+      <DeviceModelPro :model-pro="modelPro2Edit" @close="modelProVisible=false"></DeviceModelPro>
     </el-dialog>
   </el-container>
 </template>
@@ -185,6 +217,13 @@ export default {
       modelPro2Edit: {},
 
       modelProsStore:[],
+
+      modelServeVisible: false,
+      modelServe2Edit: {},
+
+      modelServesStore:[],
+
+
       modelPros: [],
       modelServes:[] ,
       /** form */
@@ -238,9 +277,6 @@ export default {
     };
   },
   methods: {
-    closeproeditor() {
-      this.modelProVisible = false;
-    },
     addModelPro() {
       let tmp = {
         modelType:'',
@@ -259,28 +295,34 @@ export default {
       this.modelProVisible = true;
       this.modelPro2Edit = tmp;
     },
+
+    addModelServe() {
+      let tmp = {
+        modelType:'',
+        identifier:'',
+        name: '',
+        description: '',
+        dates: [],
+        dataType: null,
+        deviceId: null,
+        triggers: [],
+        actions: [],
+        enabled: true,
+        accessMode:'',
+      }
+      this.productForm.modelServe.push(tmp);
+      this.modelServeVisible = true;
+      this.modelServeEdit = tmp;
+    },
     deleteModelPro(proIdx) {
       this.productForm.modelPro.splice(proIdx, 1);
     },
-    addCondition(trigIdx) {
-      this.productForm.triggers[trigIdx].conditions.push({property: '', operator: '', value: ''});
-    },
-    deleteCondition(trigIdx, condIdx) {
-      this.productForm.triggers[trigIdx].conditions.splice(condIdx, 1);
+
+    deleteModelServe(serveIdx) {
+      this.productForm.modelServe.splice(serveIdx, 1);
     },
 
-    addAction() {
-      this.productForm.actions.push({name: 'mailAction', params: []});
-    },
-    deleteAction(actIdx) {
-      this.productForm.actions.splice(actIdx, 1);
-    },
-    addParam(actIdx) {
-      this.productForm.actions[actIdx].params.push({property: '', value: ''});
-    },
-    deleteParam(actIdx, pIdx) {
-      this.productForm.actions[actIdx].params.splice(pIdx, 1);
-    },
+
 
     reset(formName) {
       this.$refs[formName].resetFields();

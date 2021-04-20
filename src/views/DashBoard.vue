@@ -20,7 +20,7 @@
           <el-menu-item index="device-create">设备创建</el-menu-item>
           <el-menu-item index="product-manage">产品</el-menu-item>
           <el-menu-item index="product-create">产品创建</el-menu-item>
-          <el-menu-item index="device-modelPro">物模型</el-menu-item>
+<!--          <el-menu-item index="device-modelPro">物模型</el-menu-item>-->
         </el-submenu>
         <el-submenu index="rule">
           <template slot="title">
