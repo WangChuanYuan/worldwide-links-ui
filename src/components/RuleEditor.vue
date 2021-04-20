@@ -293,8 +293,7 @@ export default {
     }
   },
   mounted() {
-    Api.get('/device-service/product/getAll',
-        {projectId: Number(sessionStorage.getItem('projectId'))})
+    Api.get('/device-service/product/getProductByProjectId/' + sessionStorage.getItem('projectId'))
         .then((data) => {
           if (data) {
             this.products = data;

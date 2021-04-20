@@ -83,8 +83,7 @@ import Api from '../assets/js/api';
 export default {
   name: 'Simulator',
   mounted() {
-    Api.get('/device-service/product/getAll',
-        {projectId: Number(sessionStorage.getItem('projectId'))})
+    Api.get('/device-service/product/getProductByProjectId/' + sessionStorage.getItem('projectId'))
         .then((data) => {
           if (data) {
             this.products = data;
