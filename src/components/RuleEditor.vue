@@ -315,7 +315,7 @@ export default {
         1: [{deviceId: 1, deviceName: '水温计'}, {deviceId: 2, deviceName: '体温仪'}]
       },
       properties: {
-        1: [{name: 'temperature'}]
+        1: [{name: 'temperature'}, {name: 'power'}]
       },
       operators: ['==', '!=', '>', '<', '>=', '<='],
       actions: [{name: 'mailAction', label: '邮件通知'}, {name: 'ctrlAction', label: '控制设备'}],

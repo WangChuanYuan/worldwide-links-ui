@@ -81,9 +81,9 @@ export default {
             'password': this.loginForm.password,
           }).then((data) => {
             if (data=== true) {
-              if (sessionStorage.getItem('id') !== this.loginForm.id) {
+              if (sessionStorage.getItem('userId') !== this.loginForm.id) {
                 sessionStorage.clear();
-                sessionStorage.setItem('id', this.loginForm.id);
+                sessionStorage.setItem('userId', this.loginForm.id);
               }
               this.$router.push('/project');
             } else {

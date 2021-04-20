@@ -51,8 +51,8 @@
           <el-menu-item>
             <i>{{projectName}}</i>
           </el-menu-item>
-          <el-submenu index="member" v-if="id" style="float: right">
-            <template slot="title">{{ id }}</template>
+          <el-submenu index="member" v-if="userId" style="float: right">
+            <template slot="title">{{ userId }}</template>
             <el-menu-item index="member-logout">
               <i class="el-icon-remove-outline"></i>
               登出
@@ -78,7 +78,7 @@ export default {
   name: 'DashBoard',
   data() {
     return {
-      userid: sessionStorage.getItem('id'),
+      userId: sessionStorage.getItem('userId'),
       projectName: sessionStorage.getItem('projectName'),
       isCollapsed: false
     }
