@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import Api from '../assets/js/api';
+
 
 export default {
   name: 'DashBoard',
@@ -130,12 +130,10 @@ export default {
       }
     },
     logout() {
-      Api.post('/logout').then((data) => {
-        if (data.code === "SUCCESS") {
+
           sessionStorage.clear();
           this.$router.push('/');
-        }
-      });
+
     }
   }
 };

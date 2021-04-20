@@ -272,12 +272,10 @@ export default {
   methods: {
     addModelPro() {
       let tmp = {
-        modelType:'modelPro',
         identifier:'',
         name: '',
         description: '',
-        dataType: null,
-        enabled: true,
+        dataType: '',
         accessMode:'',
       };
       this.proEditorVisible = true;
@@ -299,14 +297,10 @@ export default {
 
     addModelServe() {
       let tmp = {
-        modelType:'',
         identifier:'',
         name: '',
         description: '',
-        dataType: null,
         params:[],
-        enabled: true,
-        accessMode:'',
       }
       this.serveEditorVisible = true;
       this.$nextTick(() => {
@@ -338,7 +332,9 @@ export default {
           product['description'] = this.productForm.description;
           product['enabled'] = this.productForm.enabled;
           product['projectId'] = sessionStorage.getItem("projectId");
-          console.log(this.productForm.enabled)
+          product['modelPro']=this.productForm.modelPro;
+          product['modelServe']=this.productForm.modelServe;
+          console.log(JSON.stringify(product));
           let url = '/device-service/product/create';
           if (this.aim === 'modify') {
             product['productId'] =  this.rid;

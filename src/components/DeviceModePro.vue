@@ -256,8 +256,6 @@ export default {
           let model = {};
           model['name'] = this.modelForm.name;
           model['description'] = this.modelForm.description;
-          model['projectId'] = sessionStorage.getItem('projectId');
-          model['productId'] = this.modelForm.productId;
           model['identifier'] = this.modelForm.identifier;
           model['dataType'] = this.modelForm.dataType;
           model['accessMode'] = this.modelForm.accessMode;
