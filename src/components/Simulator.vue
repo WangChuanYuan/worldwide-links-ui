@@ -123,7 +123,7 @@ export default {
     },
 
     changeProduct(productId) {
-      Api.get('/device-service//device/getDeviceByProduct', {productId: productId})
+      Api.get('/device-service/device/getDeviceByProduct/' + productId)
           .then((data) => {
             if (data) {
               this.devices[productId] = data;

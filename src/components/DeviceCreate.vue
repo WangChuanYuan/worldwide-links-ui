@@ -4,7 +4,7 @@
       <h3>设备创建</h3>
       <hr/>
       <el-breadcrumb separator-class="el-icon-arrow-right" style="padding: 10px 0 10px 30px">
-        <el-breadcrumb-item :to="{path: '/dashboard/device_manange'}">设备管理</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{path: '/dashboard/device_manage'}">设备管理</el-breadcrumb-item>
         <el-breadcrumb-item>设备创建</el-breadcrumb-item>
       </el-breadcrumb>
       <el-form :model="deviceForm" :rules="ruleRules" ref="deviceForm" style="padding-left: 2%">
@@ -220,10 +220,10 @@ export default {
             trigger: 'blur'
           }
         ],
-        dates: [
+        password: [
           {
-            required:false,
-            message: '请选择生效时间',
+            required:true,
+            message: '请输入mqtt密码',
             trigger: 'blur'
           }
         ],
