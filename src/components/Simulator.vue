@@ -47,9 +47,9 @@
                 <el-select v-model="param.property" :value="param.property">
                   <el-option
                       v-for="prop in properties[factForm.productId]"
-                      :key="prop.name"
+                      :key="prop.identifier"
                       :label="prop.name"
-                      :value="prop.name">
+                      :value="prop.identifier">
                   </el-option>
                 </el-select>
               </el-form-item>
@@ -104,7 +104,7 @@ export default {
         1: [{deviceId: 1, deviceName: '水温计'}, {deviceId: 2, deviceName: '体温仪'}]
       },
       properties: {
-        1: [{name: 'temperature'}, {name: 'power'}]
+        1: [{identifier: 'temperature', name: '温度'}, {identifier: 'power', name: '电量'}]
       },
       /** form */
       factForm: {

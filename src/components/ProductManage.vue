@@ -36,7 +36,9 @@
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button type="text" @click="viewLogs(scope.row)">删除</el-button>
+            <el-button type="text" @click="update(scope.row)">修改</el-button>
+            <el-button type="text" @click="remove(scope.row)">删除</el-button>
+            <el-button type="text" @click="viewLogs(scope.row)">日志</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -88,21 +90,21 @@ export default {
       }).catch(() => {});
     },
     update(product) {
-      this.$router.push({name: 'productEdit', params: {rid: product.id, aim: 'modify'}});
+      this.$router.push({name: 'productCreate', params: {rid: product.productId, aim: 'modify'}});
     },
     remove(product, idx) {
-      this.$confirm('此操作将删除该规则, 是否继续?', '提示', {
+      this.$confirm('此操作将删除该产品, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        let url = '/device-service/product/delete' + product.id
-        Api.delete(url).then((data) => {
+        let url = '/device-service/product/delete';
+        Api.delete(url, {productId: product.productId}).then((data) => {
           if (data) {
-            this.$message.success("删除规则成功");
-            this.rules.splice(idx, 1);
+            this.$message.success("删除产品成功");
+            this.products.splice(idx, 1);
           } else {
-            this.$message.warning("删除规则失败");
+            this.$message.warning("删除产品失败");
           }
         }).catch(() => {});
       }).catch(() => {
@@ -113,7 +115,7 @@ export default {
       });
     },
     viewLogs(product) {
-      this.logRuleId = product.id;
+      this.logProductId = product.productId;
       this.dialogTableVisible = true;
     }
   }

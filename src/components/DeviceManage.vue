@@ -32,13 +32,14 @@
         <el-table-column label="上/下线情况">
           <template slot-scope="scope">
             <span>{{scope.row.deviceState}}</span>
+            <el-button v-if="scope.row.deviceState === '上线'" type="text" @click="offline(scope.row)">下线</el-button>
           </template>
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button v-if="scope.row.deviceState === '下线'" type="text" @click="online(scope.row)">上线</el-button>
-            <el-button v-else type="text" @click="offline(scope.row)">下线</el-button>
+            <el-button type="text" @click="update(scope.row)">修改</el-button>
             <el-button type="text" @click="remove(scope.row,scope.$index)">删除</el-button>
+            <el-button type="text" @click="viewLogs(scope.row,scope.$index)">日志</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -124,7 +125,7 @@ export default {
       }).catch(() => {});
     },
     update(device) {
-      this.$router.push({name: 'ruleEdit', params: {rid: device.id, aim: 'modify'}});
+      this.$router.push({name: 'deviceCreate', params: {rid: device.deviceId, aim: 'modify'}});
     },
     remove(device, idx) {
       this.$confirm('此操作将删除该规则, 是否继续?', '提示', {
@@ -148,8 +149,8 @@ export default {
         });
       });
     },
-    device(device) {
-      this.logRuleId = device.id;
+    viewLogs(device) {
+      this.logDeviceId = device.deviceId;
       this.dialogTableVisible = true;
     }
   }

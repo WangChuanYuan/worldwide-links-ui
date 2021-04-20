@@ -89,7 +89,7 @@
         <!--保存 重置-->
         <el-row>
           <el-col :span="6" :offset="4">
-            <el-button type="primary" @click="submit('deviceForm')">创建</el-button>
+            <el-button type="primary" @click="submit('deviceForm')">保存</el-button>
             <el-button type="plain" @click="reset('deviceForm')">重置</el-button>
           </el-col>
         </el-row>
@@ -124,50 +124,23 @@ export default {
     }
   },
   mounted() {
-    let url = '/device-service/modelPro/getAll'
-    Api.get(url).then((data) => {
-      if (data) this.modelPros = data;
-    }).catch(() => {
-    });
-    url = '/device-service/modelServe/getAll'
-    Api.get(url).then((data) => {
-      if (data) this.modelServes = data;
-    }).catch(() => {
-    });
-    url = '/device-service/product/getAll'
+    let url = '/device-service/product/getAll'
     Api.get(url).then((data) => {
       if (data) this.products = data;
     }).catch(() => {
     });
-    console.log(this.products);
     if (this.aim === 'modify') {
-      let url = '/device-service/' + sessionStorage.getItem('projectId') + '/rules/' + this.rid;
+      let url = '/device-service/device/getDeviceById/' + this.rid;
       let _this = this;
       Api.get(url).then((data) => {
         if (data) {
-          _this.deviceForm.name = data.name;
+          _this.deviceForm.name = data.deviceName;
           _this.deviceForm.description = data.description;
-          _this.deviceForm.modelProId = data.modelProId;
-          _this.deviceForm.modelServeId = data.modelServeId;
-
-          let dates = [];
-          dates[0] = data.begin;
-          dates[1] = data.end;
-          _this.deviceForm.dates = dates;
-          _this.deviceForm.enabled = data.enabled;
-
-          _this.deviceForm.triggers = data.triggers;
-          let actions_ = [];
-          for (let i = 0; i < data.actions.length; i++) {
-            let action = {};
-            action['name'] = data.actions[i].name;
-            action['params'] = [];
-            for (let key in data.actions[i].params) {
-              action['params'].push({'property': key, 'value': data.actions[i].params[key]});
-            }
-            actions_.push(action);
-          }
-          _this.deviceForm.actions = actions_;
+          _this.deviceForm.industry = data.industry;
+          _this.deviceForm.password = data.password;
+          _this.deviceForm.modelPro = data.modelPro;
+          _this.deviceForm.modelServe = data.modelServe;
+          _this.deviceForm.productId = data.productId;
         }
       }).catch(() => {
       });
@@ -197,12 +170,8 @@ export default {
         description: '',
         industry:'',
         password:'',
-        dates: [],
         modelPro: [],
         modelServe: [],
-        triggers: [],
-        actions: [],
-        enabled: true,
         productId:'',
       },
       ruleRules: {
@@ -321,7 +290,7 @@ export default {
           device['productId']=this.deviceForm.productId;
           let url = '/device-service/device/create/'+sessionStorage.getItem('projectId') ;
           if (this.aim === 'modify') {
-            device['id'] =  this.rid;
+            device['deviceId'] =  this.rid;
             Api.put(url, device).then((data) => {
               if (data) {
                 this.$message.success("修改设备成功");

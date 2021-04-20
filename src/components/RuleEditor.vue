@@ -321,9 +321,13 @@ export default {
           _this.ruleForm.productId = data.productId;
           _this.ruleForm.deviceId = data.deviceId;
 
+          _this.getDevices(this.ruleForm.productId);
+
           let dates = [];
-          dates[0] = data.begin;
-          dates[1] = data.end;
+          if (data.begin) {
+            dates[0] = data.begin;
+            dates[1] = data.end;
+          }
           _this.ruleForm.dates = dates;
           _this.ruleForm.enabled = data.enabled;
 
@@ -454,14 +458,18 @@ export default {
       this.ruleForm.actions[actIdx].params.splice(pIdx, 1);
     },
 
-    changeProduct(productId) {
-      console.log('/device-service/device/getDeviceByProduct/' + productId);
+    getDevices(productId) {
       Api.get('/device-service/device/getDeviceByProduct/' + productId)
           .then((data) => {
             if (data) {
               this.devices[productId] = data;
+              this.devices[productId].splice(0, 0, {deviceId: null, deviceName: '全部'});
             }
           }).catch(() => {});
+    },
+
+    changeProduct(productId) {
+      this.getDevices(productId);
     },
     changeAction(actionName, actIdx) {
       this.ruleForm.actions[actIdx].params = [];

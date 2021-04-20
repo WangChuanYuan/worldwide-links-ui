@@ -140,7 +140,7 @@
         <!--保存 重置-->
         <el-row>
           <el-col :span="6" :offset="4">
-            <el-button type="primary" @click="submit('deviceForm')">创建</el-button>
+            <el-button type="primary" @click="submit('deviceForm')">保存</el-button>
             <el-button type="plain" @click="reset('deviceForm')">重置</el-button>
           </el-col>
         </el-row>
@@ -175,35 +175,23 @@ export default {
     }
   },
   mounted() {
-    let url = '/device-service/modelPro/getAll'
-    Api.get(url).then((data) => {
-      if (data) this.modelPros = data;
-    }).catch(() => {
-    });
-    url = '/device-service/modelServe/getAll'
-    Api.get(url).then((data) => {
-      if (data) this.modelServes = data;
-    }).catch(() => {
-    });
-    console.log(sessionStorage.getItem('projectId'));
+    // let url = '/device-service/modelPro/getAll'
+    // Api.get(url).then((data) => {
+    //   if (data) this.modelPros = data;
+    // }).catch(() => {
+    // });
+    // url = '/device-service/modelServe/getAll'
+    // Api.get(url).then((data) => {
+    //   if (data) this.modelServes = data;
+    // }).catch(() => {
+    // });
     if (this.aim === 'modify') {
-      let url = '/device-service/' + sessionStorage.getItem('projectId') + '/rules/' + this.rid;
+      let url = '/device-service/product/getProductByProductId';
       let _this = this;
-      Api.get(url).then((data) => {
+      Api.get(url, {productId: this.rid}).then((data) => {
         if (data) {
-          _this.deviceForm.name = data.name;
-          _this.deviceForm.description = data.description;
-          _this.deviceForm.modelProId = data.modelProId;
-          _this.deviceForm.modelServeId = data.modelServeId;
-
-          let dates = [];
-          dates[0] = data.begin;
-          dates[1] = data.end;
-          _this.deviceForm.dates = dates;
-          _this.deviceForm.enabled = data.enabled;
-
-          _this.deviceForm.triggers = data.triggers;
-
+          _this.productForm = data;
+          _this.productForm.name = data.productName;
         }
       }).catch(() => {
       });

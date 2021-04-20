@@ -8,8 +8,6 @@ import RuleManage from "@/components/RuleManage";
 import RuleEditor from "@/components/RuleEditor";
 import Simulator from "@/components/Simulator";
 import Exception404 from '@/views/exception/404'
-import DeviceModePro from "@/components/DeviceModePro";
-import DeviceModeSer from "@/components/DeviceModelSer";
 import DeviceManage from "@/components/DeviceManage";
 import DeviceCreate from "@/components/DeviceCreate";
 import ProductManage from "@/components/ProductManage";
@@ -72,17 +70,7 @@ export default new Router({
                     name: 'deviceCreate',
                     component: DeviceCreate,
                     props: true
-                }, {
-                    path: 'device_modelPro',
-                    name: 'deviceModelPro',
-                    component: DeviceModePro,
-                    props: true
-                },{
-                    path: 'device_modelSer',
-                    name: 'deviceModelSer',
-                    component: DeviceModeSer,
-                    props: true
-                },
+                }
             ]
         },
         {
