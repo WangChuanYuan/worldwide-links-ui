@@ -167,12 +167,11 @@ export default {
 
           let url = '/device-service/modelServe/create';
           if (this.aim === 'modify') {
-            model['id'] =  this.rid;
+            url = '/device-service/modelServe/updateModelServe';
             Api.put(url, model).then((data) => {
               if (data) {
-                // this.$message.success("修改规则成功");
                 this.$emit('close');
-              } else this.$message.warning("修改规则失败");
+              } else this.$message.warning("修改物模型失败");
             }).catch(() => {
             });
           } else {
