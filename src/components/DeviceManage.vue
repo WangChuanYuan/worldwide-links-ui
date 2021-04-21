@@ -9,6 +9,11 @@
       </el-breadcrumb>
 
       <el-table :data="devices">
+        <el-table-column label="设备id">
+          <template slot-scope="scope">
+            <span>{{scope.row.deviceId}}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="设备名称">
           <template slot-scope="scope">
             <span>{{scope.row.deviceName}}</span>
@@ -72,7 +77,7 @@ export default {
     };
   },
   mounted() {
-    let url = '/device-service/device/getAll'
+    let url = '/device-service/device/getDeviceByProject/'+sessionStorage.getItem("projectId")
     Api.get(url).then((data) => {
       if (data) this.devices = data;
     }).catch(() => {

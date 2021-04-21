@@ -83,8 +83,6 @@ export default {
     }
   },
   mounted() {
-    // TODO REMOVE
-    sessionStorage.setItem('projectId', '1');
   },
   methods: {
     navigation(key) {
