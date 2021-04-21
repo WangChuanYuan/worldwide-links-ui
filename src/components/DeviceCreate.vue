@@ -124,7 +124,7 @@ export default {
     }
   },
   mounted() {
-    let url = '/device-service/product/getProductByProjectId'+sessionStorage.getItem("projectId")
+    let url = '/device-service/product/getProductByProjectId/'+sessionStorage.getItem("projectId")
     Api.get(url).then((data) => {
       if (data) this.products = data;
     }).catch(() => {
@@ -301,7 +301,7 @@ export default {
           } else {
             Api.post(url, device).then((data) => {
               if (data) {
-                this.$message.success("新建设备成功，设备id" + data.deviceId);
+                this.$message.success("新建设备成功，设备id: " + data.deviceId);
                 this.$router.push('/dashboard/device_manage');
               } else this.$message.warning("新建设备失败");
             }).catch(() => {
