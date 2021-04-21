@@ -261,7 +261,7 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
 
-          for (let i = 0; i < this.deviceForm.triggers.length; i++) {
+          /*for (let i = 0; i < this.deviceForm.triggers.length; i++) {
             this.deviceForm.triggers[i].conditions.forEach(condition => {
               if (!isNaN(condition.value)) condition.value = Number(condition.value);
             });
@@ -275,7 +275,7 @@ export default {
               paramMap[param.property] = param.value;
             });
             actions_[i].params = paramMap
-          }
+          }*/
           let device = {};
           device['deviceName'] = this.deviceForm.name;
           device['description'] = this.deviceForm.description;
@@ -301,7 +301,7 @@ export default {
           } else {
             Api.post(url, device).then((data) => {
               if (data) {
-                this.$message.success("新建设备成功");
+                this.$message.success("新建设备成功，设备id" + data.deviceId);
                 this.$router.push('/dashboard/device_manage');
               } else this.$message.warning("新建设备失败");
             }).catch(() => {
