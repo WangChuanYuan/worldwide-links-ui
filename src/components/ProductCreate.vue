@@ -222,14 +222,14 @@ export default {
         name: [
           {
             required: true,
-            message: '请输入设备名称',
+            message: '请输入产品名称',
             trigger: 'blur'
           }
         ],
         description: [
           {
             required: false,
-            message: '请输入设备描述',
+            message: '请输入产品描述',
             trigger: 'blur'
           }
         ],
@@ -268,6 +268,7 @@ export default {
       };
       this.proEditorVisible = true;
       this.$nextTick(() => {
+        this.$refs.modelProEditor.aim = 'add';
         this.$refs.modelProEditor.modelForm = tmp;
       });
     },
@@ -292,14 +293,15 @@ export default {
       }
       this.serveEditorVisible = true;
       this.$nextTick(() => {
+        this.$refs.modelServeEditor.aim = 'add';
         this.$refs.modelServeEditor.modelForm = tmp;
         this.$refs.modelServeEditor.modelPros = this.productForm.modelPro;
       });
     },
     modifyModelServe(serve) {
       this.serveEditorVisible = true;
-      this.$refs.modelServeEdit.aim = 'modify';
-      this.$refs.modelServeEdit.modelForm = serve;
+      this.$refs.modelServeEditor.aim = 'modify';
+      this.$refs.modelServeEditor.modelForm = serve;
       this.$refs.modelServeEditor.modelPros = this.productForm.modelPro;
     },
     deleteModelServe(serveIdx) {
