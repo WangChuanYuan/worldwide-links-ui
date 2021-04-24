@@ -36,7 +36,7 @@
         </el-table-column>
         <el-table-column label="上/下线情况">
           <template slot-scope="scope">
-            <span>{{scope.row.deviceState}}</span>
+            <span>{{scope.row.deviceState+" "}}</span>
             <el-button v-if="scope.row.deviceState === '上线'" type="text" @click="offline(scope.row)">下线</el-button>
           </template>
         </el-table-column>
