@@ -327,8 +327,9 @@ export default {
           console.log(JSON.stringify(product));
           let url = '/device-service/product/create';
           if (this.aim === 'modify') {
+            url = '/device-service/product/updateProduct';
             product['productId'] =  this.rid;
-            Api.put(url, product).then((data) => {
+            Api.post(url, product).then((data) => {
               if (data) {
                 this.$message.success("修改设备成功");
                 this.$router.push('/dashboard/device_manage');

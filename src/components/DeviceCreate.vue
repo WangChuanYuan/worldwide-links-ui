@@ -290,6 +290,7 @@ export default {
           device['productId']=this.deviceForm.productId;
           let url = '/device-service/device/create/'+sessionStorage.getItem('projectId') ;
           if (this.aim === 'modify') {
+            url = '/device-service/device/create';
             device['deviceId'] =  this.rid;
             Api.put(url, device).then((data) => {
               if (data) {
